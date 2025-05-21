@@ -1,0 +1,47 @@
+﻿@page "/shopping-list"
+
+<h1>Shopping list</h1>
+<div>
+<input type="text" id="shopping-list" class="form-control" placeholder="Enter items here..." @bind="newItem" />
+<button class="btn btn-primary" @onclick="AddToList">Add</button>
+
+</div>
+
+<ul>
+    @foreach (var item in shoppingList)
+    {
+        <li>@item.Key - @item.Value
+            <button class="btn btn-danger" @onclick="()=>RemoveFromList(item.Key)">Remove</button>
+        </li>
+
+    }
+</ul>
+
+@code {
+
+    private string newItem = string.Empty;
+    protected Dictionary<string, int> shoppingList = new();
+    private void AddToList()
+    {
+        if (!string.IsNullOrWhiteSpace(newItem))
+        {
+            if (shoppingList.ContainsKey(newItem))
+            {
+                shoppingList[newItem]++;
+            }
+            else
+            {
+                shoppingList.Add(newItem, 1);
+            }
+            newItem = string.Empty;
+        }
+    }
+
+    private void RemoveFromList(string itemName)
+    {
+        if(shoppingList.Count > 0)
+        {
+            shoppingList.Remove(itemName);
+        }
+    }
+}
