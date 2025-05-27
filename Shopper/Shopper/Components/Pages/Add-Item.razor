@@ -1,0 +1,26 @@
+@page "/add-item"
+@using Shopper.Components.Entity
+@inject NavigationManager Navigation
+
+<h1>Add New Item</h1>
+<div>
+    <input type="text" class="form-control" placeholder="Item Name" @bind="newItem.Name" />
+    <input type="text" class="form-control" placeholder="Genre" @bind="newItem.Genre" />
+    <button class="btn btn-success" @onclick="SaveItem">Save</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+</div>
+
+@code {
+    private ItemDto newItem = new ItemDto();
+
+    private void SaveItem()
+    {
+        // Save logic here (e.g., add to a shared service or state)
+        Navigation.NavigateTo("/edit-shopping-list");
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/edit-shopping-list");
+    }
+}
