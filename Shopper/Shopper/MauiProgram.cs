@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Shopper.Components.Services;
 
 namespace Shopper
 {
@@ -21,6 +22,9 @@ namespace Shopper
     		builder.Logging.AddDebug();
 #endif
 
+#region Services Registration
+            builder.Services.AddTransient<IItemsService, ItemsService>();
+#endregion
             return builder.Build();
         }
     }

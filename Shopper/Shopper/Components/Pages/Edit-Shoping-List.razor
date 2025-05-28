@@ -1,7 +1,8 @@
 ﻿@page "/edit-shopping-list"
 @using Shopper.Components.Entity
+@using Shopper.Components.Services
 @inject NavigationManager Navigation
-
+@inject IItemsService itemsService
 <h1> Edit Shopping list</h1>
 <div>
 <button class="btn btn-primary" @onclick="NavigateToAddItem">Add new item</button>
@@ -28,7 +29,7 @@
 
     protected override void OnInitialized()
     {
-        shoppingList.Add(itemDto, 1);
+        shoppingList = itemsService.GetShoppingList();
     }
 
     private void NavigateToAddItem()
