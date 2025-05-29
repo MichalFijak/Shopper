@@ -23,7 +23,7 @@ namespace Shopper
 #endif
 
 #region Services Registration
-            builder.Services.AddTransient<IItemsService, ItemsService>();
+            builder.Services.AddSingleton<IItemsService, ItemsService>();
 #endregion
             return builder.Build();
         }

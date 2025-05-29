@@ -12,24 +12,26 @@
 <ul>
     @foreach (var item in shoppingList)
     {
-        <li @onclick="NavigateToModifyItem">@item.Key.Name - @item.Value</li>
-        <span>button submitItem</span>
-
+        <li>
+            <div @onclick="() => NavigateToModifyItem(item.Key)">
+                <span>@item.Key.Name</span>
+                <span>| rodzaj: @item.Key.Genre |</span>
+                <span> szt.@item.Value</span>
+            </div>
+        <button @onclick="() => RemoveItem(item)">remove item</button>
+        </li>
     }
+
 </ul>
 
 @code {
 
     protected Dictionary<ItemDto, int> shoppingList = new();
-    protected ItemDto itemDto = new ItemDto()
-        {
-            Name = "Milk",
-            Genre = "Dairy"
-        };
-
+    protected List<ItemDto> items = new List<ItemDto>();
     protected override void OnInitialized()
     {
         shoppingList = itemsService.GetShoppingList();
+        items = itemsService.GetSubmittedItems();
     }
 
     private void NavigateToAddItem()
@@ -37,9 +39,14 @@
         Navigation.NavigateTo("/add-item");
     }
 
-    private void NavigateToModifyItem()
+    private void NavigateToModifyItem(ItemDto item)
     {
-        Navigation.NavigateTo("/add-item");
+        itemsService.SetItemToModify(item);
+        Navigation.NavigateTo("/edit-item");
 
+    }
+    private void RemoveItem(KeyValuePair<ItemDto, int> item)
+    {
+        itemsService.RemoveItem(item.Key, item.Value);
     }
 }

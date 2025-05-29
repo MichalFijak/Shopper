@@ -8,9 +8,10 @@ namespace Shopper.Components.Services
 
         private readonly List<ItemDto> submittedItems = [];
 
+        private ItemDto? itemToModify;
         public Dictionary<ItemDto, int> GetShoppingList()
         {
-            return new Dictionary<ItemDto, int>(items);
+            return items;
         }
 
         public List<ItemDto> GetSubmittedItems()
@@ -28,6 +29,8 @@ namespace Shopper.Components.Services
             {
                 items[item] = quantity;
             }
+            submittedItems.Add(item);
+
         }
 
         public void RemoveItem(ItemDto item, int quantity)
@@ -47,6 +50,37 @@ namespace Shopper.Components.Services
             submittedItems.Add(item);
         }
 
+        public void ModifyItemName(ItemDto item, ItemDto newitem, int amount)
+        {
+            if (items.TryGetValue(item, out int quantity))
+            {
+                if(quantity==-amount)
+                {
+                    RemoveItem(item, quantity);
+                    return;
+                }
+                items.Remove(item);
 
+                var updatedItem = new ItemDto
+                {
+                    Name = newitem.Name,
+                    Genre = newitem.Genre,
+                    Description = newitem.Description,
+                    Price = newitem.Price
+                };
+
+                items[updatedItem] = quantity +amount;
+            }
+        }
+
+        public void SetItemToModify(ItemDto item)
+        {
+            this.itemToModify = item;
+
+        }
+        public ItemDto GetItemToModify()
+        {
+            return itemToModify;
+        }
     }
 }
