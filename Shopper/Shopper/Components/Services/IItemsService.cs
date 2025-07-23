@@ -5,13 +5,13 @@ namespace Shopper.Components.Services
     public interface IItemsService
     {
         Dictionary<ItemDto, int> GetShoppingList();
-        List<ItemDto> GetSubmittedItems();
+        Dictionary<ItemDto, int> GetSubmittedItems();
         ItemDto GetItemToModify();
         void AddItem(ItemDto item, int quantity);
         void RemoveItem(ItemDto item, int quantity);
-        void SubmitItem(ItemDto item);
+        void SubmitItem(ItemDto item, int quantity);
         void SetItemToModify(ItemDto item);
-        void ModifyItemName(ItemDto item, ItemDto newitem, int amount);
+        void ModifyItem(ItemDto item, ItemDto newitem, int amount);
 
     }
 }

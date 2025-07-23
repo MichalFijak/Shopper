@@ -27,11 +27,9 @@
 @code {
 
     protected Dictionary<ItemDto, int> shoppingList = new();
-    protected List<ItemDto> items = new List<ItemDto>();
     protected override void OnInitialized()
     {
         shoppingList = itemsService.GetShoppingList();
-        items = itemsService.GetSubmittedItems();
     }
 
     private void NavigateToAddItem()

@@ -1,10 +1,60 @@
 ﻿@page "/shopping-list"
-
+@using Shopper.Components.Entity
+@using Shopper.Components.Services
+@inject IItemsService itemsService
 <h1>Shopping list</h1>
+<h2>Choose a list:</h2>
 
+<div>
+    <label><input type="radio" value="Aktualna lista" checked="@IsSelected("Actual_List")" @onchange="OnSelectionChanged" /> Aktualna lista</label>
+    <label><input type="radio" value="Kuzyni" checked="@IsSelected("Kuzyni")" @onchange="OnSelectionChanged" /> Kuzyni</label>
+    <label><input type="radio" value="Nabial" checked="@IsSelected("Nabial")" @onchange="OnSelectionChanged" /> Nabial</label>
+</div>
 
+@if (selectedList == "Actual_List")
+{
+    <ul>
+        @foreach (var item in shoppingList)
+        {
+
+            <li><span>Nazwa: @item.Key.Name</span><span>Genre: @item.Key.Genre</span><span>Amount: @item.Value</span></li>
+        }
+
+    </ul>
+}
+else if (selectedList == "Kuzyni")
+{
+    <ul>
+        <li>Dog</li>
+        <li>Cat</li>
+        <li>Elephant</li>
+    </ul>
+}
+else if (selectedList == "Nabial")
+{
+    <ul>
+        <li>Red</li>
+        <li>Blue</li>
+        <li>Green</li>
+    </ul>
+}
 
 @code {
+    private string selectedList { get; set; } = "Actual_List";
+    protected Dictionary<ItemDto, int> shoppingList = new();
 
+    protected override void OnInitialized()
+    {
+        shoppingList = itemsService.GetShoppingList();
+    }
 
+    private void OnSelectionChanged(ChangeEventArgs e)
+    {
+        selectedList = e.Value?.ToString();
+    }
+
+    private bool IsSelected(string value)
+    {
+        return selectedList == value;
+    }
 }

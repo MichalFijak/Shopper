@@ -6,15 +6,17 @@ namespace Shopper.Components.Services
     {
         private readonly Dictionary<ItemDto, int> items = [];
 
-        private readonly List<ItemDto> submittedItems = [];
+        private readonly Dictionary<ItemDto, int> submittedItems = [];
 
-        private ItemDto? itemToModify;
+        private ItemDto itemToModify = new();
         public Dictionary<ItemDto, int> GetShoppingList()
         {
             return items;
         }
 
-        public List<ItemDto> GetSubmittedItems()
+
+        //  this method will return list of items that has been submitted (added to the cart)
+        public Dictionary<ItemDto, int> GetSubmittedItems()
         {
             return submittedItems;
         }
@@ -27,9 +29,8 @@ namespace Shopper.Components.Services
             }
             else
             {
-                items[item] = quantity;
+                items.Add(item,quantity);
             }
-            submittedItems.Add(item);
 
         }
 
@@ -45,12 +46,13 @@ namespace Shopper.Components.Services
             }
         }
 
-        public void SubmitItem(ItemDto item)
+        public void SubmitItem(ItemDto item, int quantity)
         {
-            submittedItems.Add(item);
+            submittedItems.Add(item, quantity);
+            RemoveItem(item, quantity);
         }
 
-        public void ModifyItemName(ItemDto item, ItemDto newitem, int amount)
+        public void ModifyItem(ItemDto item, ItemDto newitem, int amount)
         {
             if (items.TryGetValue(item, out int quantity))
             {
