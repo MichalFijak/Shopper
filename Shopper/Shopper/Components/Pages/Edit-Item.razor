@@ -1,0 +1,39 @@
+﻿@page "/edit-item"
+@using Shopper.Components.Entity
+@using Shopper.Components.Services
+@inject IItemsService itemsService
+@inject NavigationManager Navigation
+<h1>Edit New Item</h1>
+<div>
+    <input type="text" class="form-control" placeholder="Item Name" @bind="newItem.Name" />
+    <input type="text" class="form-control" placeholder="Genre" @bind="newItem.Genre" />
+    <input type="number" class="form-control" placeholder="New amount" @bind="amount" />
+    <button class="btn btn-success" @onclick="SaveItem">Save</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+</div>
+@code {
+
+
+    private ItemDto newItem = new ItemDto();
+    private int amount;
+    private void SaveItem()
+    {
+        var oldItem = itemsService.GetItemToModify();
+        if((newItem == null || string.IsNullOrWhiteSpace(newItem.Name) || string.IsNullOrWhiteSpace(newItem.Genre)) && amount<=0)
+        {
+            // some error handling
+            return;
+        }
+        if (newItem == null || string.IsNullOrWhiteSpace(newItem.Name) || string.IsNullOrWhiteSpace(newItem.Genre))
+        {
+            newItem = oldItem;
+        }
+        itemsService.ModifyItem(oldItem, newItem, amount);
+        Navigation.NavigateTo("/edit-shopping-list");
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/edit-shopping-list");
+    }
+}
