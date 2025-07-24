@@ -23,13 +23,9 @@ namespace Shopper.Components.Services
 
         public void AddItem(ItemDto item, int quantity)
         {
-            if (items.ContainsKey(item))
+            if (!items.TryAdd(item, quantity))
             {
                 items[item] += quantity;
-            }
-            else
-            {
-                items.Add(item,quantity);
             }
 
         }
