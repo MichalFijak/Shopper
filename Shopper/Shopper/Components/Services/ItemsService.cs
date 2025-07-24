@@ -1,84 +1,70 @@
 ﻿using Shopper.Components.Entity;
+using Shopper.Components.State;
 
-namespace Shopper.Components.Services
+public class ItemsService : IItemsService
 {
-    public class ItemsService : IItemsService
+    private readonly ShoppingState state;
+
+    public ItemsService(ShoppingState state)
     {
-        private readonly Dictionary<ItemDto, int> items = [];
+        this.state = state;
+    }
 
-        private readonly Dictionary<ItemDto, int> submittedItems = [];
+    public Dictionary<ItemDto, int> GetShoppingList() => state.Items;
+    public Dictionary<ItemDto, int> GetSubmittedItems() => state.SubmittedItems;
+    public ItemDto GetItemToModify() => state.ItemToModify;
 
-        private ItemDto itemToModify = new();
-        public Dictionary<ItemDto, int> GetShoppingList()
+    public void AddItem(ItemDto item, int quantity)
+    {
+        if (!state.Items.TryAdd(item, quantity))
+            state.Items[item] += quantity;
+
+        state.NotifyChange();
+    }
+
+    public void RemoveItem(ItemDto item, int quantity)
+    {
+        if (state.Items.ContainsKey(item))
         {
-            return items;
-        }
+            state.Items[item] -= quantity;
+            if (state.Items[item] <= 0)
+                state.Items.Remove(item);
 
-
-        //  this method will return list of items that has been submitted (added to the cart)
-        public Dictionary<ItemDto, int> GetSubmittedItems()
-        {
-            return submittedItems;
-        }
-
-        public void AddItem(ItemDto item, int quantity)
-        {
-            if (!items.TryAdd(item, quantity))
-            {
-                items[item] += quantity;
-            }
-
-        }
-
-        public void RemoveItem(ItemDto item, int quantity)
-        {
-            if (items.ContainsKey(item))
-            {
-                items[item] -= quantity;
-                if (items[item] <= 0)
-                {
-                    items.Remove(item);
-                }
-            }
-        }
-
-        public void SubmitItem(ItemDto item, int quantity)
-        {
-            submittedItems.Add(item, quantity);
-            RemoveItem(item, quantity);
-        }
-
-        public void ModifyItem(ItemDto item, ItemDto newitem, int amount)
-        {
-            if (items.TryGetValue(item, out int quantity))
-            {
-                if(quantity==-amount)
-                {
-                    RemoveItem(item, quantity);
-                    return;
-                }
-                items.Remove(item);
-
-                var updatedItem = new ItemDto
-                {
-                    Name = newitem.Name,
-                    Genre = newitem.Genre,
-                    Description = newitem.Description,
-                    Price = newitem.Price
-                };
-
-                items[updatedItem] = quantity +amount;
-            }
-        }
-
-        public void SetItemToModify(ItemDto item)
-        {
-            this.itemToModify = item;
-
-        }
-        public ItemDto GetItemToModify()
-        {
-            return itemToModify;
+            state.NotifyChange();
         }
     }
+
+    public void SubmitItem(ItemDto item, int quantity)
+    {
+        state.SubmittedItems[item] = quantity;
+        RemoveItem(item, quantity);
+    }
+
+    public void ModifyItem(ItemDto item, ItemDto newitem, int amount)
+    {
+        if (state.Items.TryGetValue(item, out int currentQuantity))
+        {
+            if (currentQuantity == -amount)
+            {
+                RemoveItem(item, currentQuantity);
+                return;
+            }
+
+            state.Items.Remove(item);
+
+            var updatedItem = new ItemDto
+            {
+                Name = newitem.Name,
+                Genre = newitem.Genre,
+                Description = newitem.Description,
+                Price = newitem.Price
+            };
+
+            state.Items[updatedItem] = currentQuantity + amount;
+            state.NotifyChange();
+        }
+    }
+
+    public void SetItemToModify(ItemDto item) => state.SetItemToModify(item);
 }
+
