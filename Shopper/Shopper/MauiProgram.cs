@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Shopper.Components.Services;
+using Shopper.Components.State;
 
 namespace Shopper
 {
@@ -22,9 +22,12 @@ namespace Shopper
     		builder.Logging.AddDebug();
 #endif
 
-#region Services Registration
-            builder.Services.AddSingleton<IItemsService, ItemsService>();
-#endregion
+            #region Services Registration
+            builder.Services.AddSingleton<ShoppingState>();
+            builder.Services.AddScoped<IItemsService, ItemsService>();
+
+
+            #endregion
             return builder.Build();
         }
     }

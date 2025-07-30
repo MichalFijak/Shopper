@@ -1,21 +1,25 @@
 ﻿@page "/shopping-list"
 @using Shopper.Components.Entity
-@using Shopper.Components.Services
+@using Shopper.Components.State
 @inject IItemsService itemsService
-<h1>@selectedList</h1>
+@inject ShoppingState state
+<h1>@state.SelectedList</h1>
 <div>
     <h2>Choose a list:</h2>
     <div>
-    <label><input type="radio" value="Aktualna lista" checked="@IsSelected("Actual_List")" @onchange="OnSelectionChanged" /> Aktualna lista</label>
-    <label><input type="radio" value="Kuzyni" checked="@IsSelected("Kuzyni")" @onchange="OnSelectionChanged" /> Kuzyni</label>
-    <label><input type="radio" value="Nabial" checked="@IsSelected("Nabial")" @onchange="OnSelectionChanged" /> Nabial</label>
-    <label><input type="radio" value="Koszyk" checked="@IsSelected("Koszyk")" @onchange="OnSelectionChanged" /> Koszyk</label>
+        <label><input type="radio" name="listSelection" value="Actual_List" checked="@IsSelected("Actual_List")" @onchange="OnSelectionChanged" /> Aktualna lista</label>
+    <label><input type="radio" name="listSelection" value="Kuzyni" checked="@IsSelected("Kuzyni")" @onchange="OnSelectionChanged" /> Kuzyni</label>
+    <label><input type="radio" name="listSelection" value="Nabial" checked="@IsSelected("Nabial")" @onchange="OnSelectionChanged" /> Nabial</label>
+    <label><input type="radio" name="listSelection" value="Koszyk" checked="@IsSelected("Koszyk")" @onchange="OnSelectionChanged" /> Koszyk</label>
     </div>
+    <p>SelectedList: '@state.SelectedList'</p>
 </div>
-@if (selectedList == "Actual_List")
+
+
+@if (state.SelectedList == "Actual_List")
 {
     <ul>
-        @foreach (var item in shoppingList)
+        @foreach (var item in state.Items)
         {
 
             <li>
@@ -26,7 +30,7 @@
 
     </ul>
 }
-else if (selectedList == "Kuzyni")
+else if (state.SelectedList == "Kuzyni")
 {
     <ul>
         <li>Dog</li>
@@ -34,7 +38,7 @@ else if (selectedList == "Kuzyni")
         <li>Elephant</li>
     </ul>
 }
-else if (selectedList == "Nabial")
+else if (state.SelectedList == "Nabial")
 {
     <ul>
         <li>Red</li>
@@ -42,10 +46,10 @@ else if (selectedList == "Nabial")
         <li>Green</li>
     </ul>
 }
-else if (selectedList == "Koszyk")
+else if (state.SelectedList == "Koszyk")
 {
     <ul>
-        @foreach (var item in submitedList)
+        @foreach (var item in state.ItemsInCart)
         {
 
             <li>
@@ -58,37 +62,27 @@ else if (selectedList == "Koszyk")
 }
 
 @code {
-    private string selectedList { get; set; } = "Actual_List";
-    protected Dictionary<ItemDto, int> shoppingList = new();
-    protected Dictionary<ItemDto, int> submitedList = new();
-
 
     protected override void OnInitialized()
     {
-        RerenderList();
+        state.OnChange += StateHasChanged;
     }
 
     private void OnSelectionChanged(ChangeEventArgs e)
     {
-        selectedList = e.Value?.ToString();
-        RerenderList();
+        state.SetSelectedList(e.Value?.ToString() ?? "Actual_List");
     }
 
     private bool IsSelected(string value)
     {
-        return selectedList == value;
+        return state.SelectedList == value;
     }
 
     private void SubmitItem(ItemDto item, int itemCount)
     {
         itemsService.SubmitItem(item, itemCount);
-        RerenderList();
+
     }
 
-    private void RerenderList()
-    {
-        shoppingList = itemsService.GetShoppingList();
-        submitedList = itemsService.GetSubmittedItems();
-        StateHasChanged();
-    }
+
 }
