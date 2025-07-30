@@ -11,7 +11,7 @@ public class ItemsService : IItemsService
     }
 
     public Dictionary<ItemDto, int> GetShoppingList() => state.Items;
-    public Dictionary<ItemDto, int> GetSubmittedItems() => state.SubmittedItems;
+    public Dictionary<ItemDto, int> GetSubmittedItems() => state.ItemsInCart;
     public ItemDto GetItemToModify() => state.ItemToModify;
 
     public void AddItem(ItemDto item, int quantity)
@@ -36,7 +36,7 @@ public class ItemsService : IItemsService
 
     public void SubmitItem(ItemDto item, int quantity)
     {
-        state.SubmittedItems[item] = quantity;
+        state.ItemsInCart[item] = quantity;
         RemoveItem(item, quantity);
     }
 
