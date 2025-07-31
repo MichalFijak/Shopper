@@ -1,5 +1,7 @@
 ﻿
-using Shopper.Components.Entity;
+
+
+using Shopper.Services.Components.Dtos;
 
 namespace Shopper.Components.State
 {

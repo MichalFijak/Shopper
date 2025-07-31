@@ -1,5 +1,5 @@
-﻿using Shopper.Components.Entity;
-using Shopper.Components.State;
+﻿using Shopper.Components.State;
+using Shopper.Services.Components.Dtos;
 
 public class ItemsService : IItemsService
 {

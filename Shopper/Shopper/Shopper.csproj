@@ -64,4 +64,10 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Shopper.Core\Shopper.Core.csproj" />
+      <ProjectReference Include="..\Shopper.Data\Shopper.Data.csproj" />
+      <ProjectReference Include="..\Shopper.Services\Shopper.Services.csproj" />
+    </ItemGroup>
+
 </Project>
