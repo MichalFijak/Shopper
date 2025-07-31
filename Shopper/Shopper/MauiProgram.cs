@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Shopper.Components.State;
+using Shopper.Data;
+using Shopper.Services;
 
 namespace Shopper
 {
@@ -17,15 +19,17 @@ namespace Shopper
 
             builder.Services.AddMauiBlazorWebView();
 
+
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
 
             #region Services Registration
+            builder.Services.AddServicesDependecies();
+            builder.Services.AddDataDependecies();
             builder.Services.AddSingleton<ShoppingState>();
             builder.Services.AddScoped<IItemsService, ItemsService>();
-
 
             #endregion
             return builder.Build();

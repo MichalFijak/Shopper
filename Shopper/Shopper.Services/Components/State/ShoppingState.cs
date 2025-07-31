@@ -1,4 +1,5 @@
 ﻿
+
 using Shopper.Components.Entity;
 
 namespace Shopper.Components.State

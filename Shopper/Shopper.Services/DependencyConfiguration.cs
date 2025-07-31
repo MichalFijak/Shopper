@@ -1,0 +1,20 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using Shopper.Components.State;
+
+namespace Shopper.Services
+{
+    public static class ServiceCollectionExtensions
+    {
+
+        public static IServiceCollection AddServicesDependecies(this IServiceCollection services)
+        {
+            // Register your data-related services here
+            // Example: services.AddScoped<IRepository, RepositoryImplementation>();
+            services.AddScoped<IItemsService, ItemsService>();
+            services.AddSingleton<ShoppingState>();
+            return services;
+        }
+        //This can sit between App and Data, holding application logic like service classes,
+        //orchestrations, use cases, caching, or even platform-specific features. It might reference both Core and Data.
+    }
+}
