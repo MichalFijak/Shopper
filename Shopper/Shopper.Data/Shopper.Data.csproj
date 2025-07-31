@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Shopper.Core\Shopper.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\Repositories\" />
+  </ItemGroup>
+
 </Project>

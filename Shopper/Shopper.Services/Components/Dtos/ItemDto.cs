@@ -1,4 +1,4 @@
-﻿namespace Shopper.Components.Entity
+﻿namespace Shopper.Services.Components.Dtos
 {
     public class ItemDto
     {

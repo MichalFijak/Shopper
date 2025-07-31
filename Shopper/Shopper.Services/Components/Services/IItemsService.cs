@@ -1,4 +1,6 @@
-﻿using Shopper.Components.Entity;
+﻿
+
+using Shopper.Services.Components.Dtos;
 
 public interface IItemsService
 {
@@ -11,3 +13,4 @@ public interface IItemsService
     void SetItemToModify(ItemDto item);
     void SubmitItem(ItemDto item, int quantity);
 }
+

@@ -1,6 +1,7 @@
 ﻿@page "/shopping-list"
-@using Shopper.Components.Entity
+
 @using Shopper.Components.State
+@using Shopper.Services.Components.Dtos
 @inject IItemsService itemsService
 @inject ShoppingState state
 <h1>@state.SelectedList</h1>

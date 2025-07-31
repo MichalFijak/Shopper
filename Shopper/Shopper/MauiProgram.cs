@@ -28,8 +28,6 @@ namespace Shopper
             #region Services Registration
             builder.Services.AddServicesDependecies();
             builder.Services.AddDataDependecies();
-            builder.Services.AddSingleton<ShoppingState>();
-            builder.Services.AddScoped<IItemsService, ItemsService>();
 
             #endregion
             return builder.Build();
