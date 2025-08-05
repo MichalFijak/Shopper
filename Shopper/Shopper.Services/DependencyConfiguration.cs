@@ -8,8 +8,7 @@ namespace Shopper.Services
 
         public static IServiceCollection AddServicesDependecies(this IServiceCollection services)
         {
-            // Register your data-related services here
-            // Example: services.AddScoped<IRepository, RepositoryImplementation>();
+
             services.AddScoped<IItemsService, ItemsService>();
             services.AddSingleton<ShoppingState>();
             return services;

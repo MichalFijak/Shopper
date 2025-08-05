@@ -7,15 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FireSharp" Version="2.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shopper.Core\Shopper.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Components\Repositories\" />
   </ItemGroup>
 
 </Project>

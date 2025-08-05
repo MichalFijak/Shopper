@@ -1,10 +1,5 @@
 ﻿using Shopper.Core.Components.Entity;
 using Shopper.Services.Components.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shopper.Services.Components.Mappers
 {
