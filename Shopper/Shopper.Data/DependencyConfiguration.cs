@@ -11,8 +11,8 @@ namespace Shopper.Data
         public static IServiceCollection AddDataDependecies(this IServiceCollection services)
         {
             services.AddSingleton<IFirebaseEventListener, FirebaseEventListener>();
-            services.AddSingleton<IFirebaseClientFactory, FirebaseClientFactory>();
-            services.AddTransient<IFirebaseWebhookService, FirebaseWebhookService>();
+            services.AddSingleton<IFirestoreClientFactory, FirestoreClientFactory>();
+            services.AddTransient<IFirebaseWebhookHandler, FirebaseWebhookHandler>();
             // Register your data-related services here
             // Example: services.AddScoped<IRepository, RepositoryImplementation>();
             return services;

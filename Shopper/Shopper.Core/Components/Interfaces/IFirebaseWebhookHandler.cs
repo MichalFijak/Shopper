@@ -1,8 +1,8 @@
 ﻿using Shopper.Core.Components.Entity;
 
-namespace Shopper.Data.Components.Webhooks
+namespace Shopper.Data.Infrastructure.Firebase.Webhooks
 {
-    public interface IFirebaseWebhookService
+    public interface IFirebaseWebhookHandler
     {
         Task CreateItemAsync(string path, ItemModel data);
         Task DeleteItemAsync(string path);
