@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Shopper.Components.State;
+using Shopper.Services.Components.Policies;
+using Shopper.Services.Components.State;
 
 namespace Shopper.Services
 {
@@ -10,6 +11,7 @@ namespace Shopper.Services
         {
 
             services.AddScoped<IItemsService, ItemsService>();
+            services.AddTransient<ISegregationPolicy, SegregationPolicy>();
             services.AddSingleton<ShoppingState>();
             return services;
         }

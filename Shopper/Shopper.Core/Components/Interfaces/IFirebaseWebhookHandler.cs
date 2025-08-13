@@ -1,6 +1,6 @@
 ﻿using Shopper.Core.Components.Entity;
 
-namespace Shopper.Data.Infrastructure.Firebase.Webhooks
+namespace Shopper.Core.Components.Interfaces
 {
     public interface IFirebaseWebhookHandler
     {

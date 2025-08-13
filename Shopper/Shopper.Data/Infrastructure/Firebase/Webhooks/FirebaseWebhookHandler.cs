@@ -1,20 +1,15 @@
 ﻿using Google.Cloud.Firestore;
 using Shopper.Core.Components.Entity;
 using Shopper.Core.Components.Factory;
-using Shopper.Data.Components.Webhooks;
+using Shopper.Core.Components.Interfaces;
 
 namespace Shopper.Data.Infrastructure.Firebase.Webhooks
 {
-    public class FirebaseWebhookHandler : IFirebaseWebhookHandler
+    public class FirebaseWebhookHandler(IFirestoreClientFactory firebaseClientFactory) : IFirebaseWebhookHandler
     {
-        private readonly FirestoreDb firebaseClient;
-        public FirebaseWebhookHandler(IFirestoreClientFactory firebaseClientFactory)
-        {
-            this.firebaseClient = firebaseClientFactory.Create();
+        private readonly FirestoreDb firebaseClient = firebaseClientFactory.Create();
 
-        }
-
-        public async Task<ItemModel> GetItemAsync(string path)
+        public async Task<ItemModelDescription> GetItemAsync(string path)
         {
             var docRef = firebaseClient.Document(path);
             var snapshot = await docRef.GetSnapshotAsync();
@@ -23,17 +18,17 @@ namespace Shopper.Data.Infrastructure.Firebase.Webhooks
             {
                 throw new Exception("Item not found.");
             }
-            return snapshot.ConvertTo<ItemModel>();
+            return snapshot.ConvertTo<ItemModelDescription>();
         }
 
-        public async Task CreateItemAsync(string path, ItemModel data)
+        public async Task CreateItemAsync(string path, ItemModelDescription data)
         {
             var docRef = firebaseClient.Document(path);
 
             await docRef.CreateAsync(data);
         }
 
-        public async Task UpdateItemAsync(string path, ItemModel data)
+        public async Task UpdateItemAsync(string path, ItemModelDescription data)
         {
 
             var docRef = firebaseClient.Document(path);

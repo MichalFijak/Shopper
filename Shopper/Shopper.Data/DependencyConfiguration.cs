@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Shopper.Core.Components.Factory;
+using Shopper.Core.Components.Interfaces;
 using Shopper.Data.Components.Webhooks;
 using Shopper.Data.Infrastructure.Firebase.Listeners;
 using Shopper.Data.Infrastructure.Firebase.Webhooks;
