@@ -28,14 +28,14 @@ namespace Shopper.Data.Infrastructure.Firebase.Listeners
                         case DocumentChange.Type.Added:
                             Console.WriteLine("Item about to being added.");
 
-                            firebaseWebhookHandler.CreateItemAsync(change.Document.Reference.Path, change.Document.ConvertTo<ItemModelDescription>()).Wait();
+                            firebaseWebhookHandler.CreateItemAsync(change.Document.Reference.Path, change.Document.ConvertTo<ItemModel>()).Wait();
                             Console.WriteLine("Item added.");
                             break;
 
                         case DocumentChange.Type.Modified:
                             Console.WriteLine("Item about to being modified.");
 
-                            firebaseWebhookHandler.UpdateItemAsync(change.Document.Reference.Path, change.Document.ConvertTo<ItemModelDescription>()).Wait();
+                            firebaseWebhookHandler.UpdateItemAsync(change.Document.Reference.Path, change.Document.ConvertTo<ItemModel>()).Wait();
                             Console.WriteLine("Item modified.");
                             break;
 

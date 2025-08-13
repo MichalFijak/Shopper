@@ -9,7 +9,7 @@ namespace Shopper.Data.Infrastructure.Firebase.Webhooks
     {
         private readonly FirestoreDb firebaseClient = firebaseClientFactory.Create();
 
-        public async Task<ItemModelDescription> GetItemAsync(string path)
+        public async Task<ItemModel> GetItemAsync(string path)
         {
             var docRef = firebaseClient.Document(path);
             var snapshot = await docRef.GetSnapshotAsync();
@@ -18,17 +18,17 @@ namespace Shopper.Data.Infrastructure.Firebase.Webhooks
             {
                 throw new Exception("Item not found.");
             }
-            return snapshot.ConvertTo<ItemModelDescription>();
+            return snapshot.ConvertTo<ItemModel>();
         }
 
-        public async Task CreateItemAsync(string path, ItemModelDescription data)
+        public async Task CreateItemAsync(string path, ItemModel data)
         {
             var docRef = firebaseClient.Document(path);
 
             await docRef.CreateAsync(data);
         }
 
-        public async Task UpdateItemAsync(string path, ItemModelDescription data)
+        public async Task UpdateItemAsync(string path, ItemModel data)
         {
 
             var docRef = firebaseClient.Document(path);
