@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Interfaces\" />
-    <Folder Include="Components\Factory\" />
+    <PackageReference Include="Google.Cloud.Firestore" Version="3.10.0" />
   </ItemGroup>
 
 </Project>

@@ -1,10 +1,5 @@
 ﻿using Shopper.Core.Components.Entity;
 using Shopper.Services.Components.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shopper.Services.Components.Mappers
 {
@@ -15,9 +10,10 @@ namespace Shopper.Services.Components.Mappers
             return new ItemDto
             {
                 Name = item.Name,
-                Genre = item.Genre,
-                Description = item.Description,
-                Price = item.Price
+                Genre = item.Description?.Genre,
+                Description = item.Description?.Description,
+                Price = item.Description?.Price,
+                InCart = item.InCart
             };
         }
         public static ItemModel ToModel(this ItemDto itemDto)
@@ -25,6 +21,15 @@ namespace Shopper.Services.Components.Mappers
             return new ItemModel
             {
                 Name = itemDto.Name,
+                InCart = itemDto.InCart,
+                Description = itemDto.ToDescription()
+            };
+        }
+
+        private static ItemModelDescription ToDescription(this ItemDto itemDto)
+        {
+            return new ItemModelDescription
+            {
                 Genre = itemDto.Genre,
                 Description = itemDto.Description,
                 Price = itemDto.Price
@@ -32,5 +37,4 @@ namespace Shopper.Services.Components.Mappers
         }
     }
 
-    // Think how you could also send request backwards to the server to update the item in the cart
 }

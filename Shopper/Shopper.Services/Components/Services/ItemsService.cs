@@ -1,5 +1,5 @@
-﻿using Shopper.Components.State;
-using Shopper.Services.Components.Dtos;
+﻿using Shopper.Services.Components.Dtos;
+using Shopper.Services.Components.State;
 
 public class ItemsService : IItemsService
 {
@@ -17,8 +17,10 @@ public class ItemsService : IItemsService
     public void AddItem(ItemDto item, int quantity)
     {
         if (!state.Items.TryAdd(item, quantity))
+        {
+            item.InCart = true;
             state.Items[item] += quantity;
-
+        }
         state.NotifyChange();
     }
 
@@ -26,6 +28,7 @@ public class ItemsService : IItemsService
     {
         if (state.Items.ContainsKey(item))
         {
+            item.InCart = false;
             state.Items[item] -= quantity;
             if (state.Items[item] <= 0)
                 state.Items.Remove(item);

@@ -1,4 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Shopper.Core.Components.Factory;
+using Shopper.Core.Components.Interfaces;
+using Shopper.Data.Components.Webhooks;
+using Shopper.Data.Infrastructure.Firebase.Listeners;
+using Shopper.Data.Infrastructure.Firebase.Webhooks;
 
 namespace Shopper.Data
 {
@@ -6,6 +11,9 @@ namespace Shopper.Data
     {
         public static IServiceCollection AddDataDependecies(this IServiceCollection services)
         {
+            services.AddSingleton<IFirebaseEventListener, FirebaseEventListener>();
+            services.AddSingleton<IFirestoreClientFactory, FirestoreClientFactory>();
+            services.AddTransient<IFirebaseWebhookHandler, FirebaseWebhookHandler>();
             // Register your data-related services here
             // Example: services.AddScoped<IRepository, RepositoryImplementation>();
             return services;
