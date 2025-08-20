@@ -9,7 +9,7 @@ namespace Shopper.Data.Infrastructure.Firebase.Listeners
 {
     public class FirebaseEventSource(IFirestoreClientFactory firebaseClientFactory, IFirebaseWebhookHandler firebaseWebhookHandler) : IFirebaseEventSource
     {
-        private readonly FirestoreDb firebaseClient = firebaseClientFactory.Create();
+        private readonly FirestoreDb firebaseClient = firebaseClientFactory.GetClient();
         private readonly IFirebaseWebhookHandler firebaseWebhookHandler = firebaseWebhookHandler;
         private readonly string collectionPath = "getThisPathFromEnviroments";
         public async Task ListenToEventAsync(string webhookData)

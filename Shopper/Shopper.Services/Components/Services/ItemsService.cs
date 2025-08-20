@@ -1,73 +1,51 @@
 ﻿using Shopper.Services.Components.Dtos;
+using Shopper.Services.Components.Services;
 using Shopper.Services.Components.State;
 
 public class ItemsService : IItemsService
 {
     private readonly ShoppingState state;
+    private readonly IFirebaseSyncService firebaseSync;
 
-    public ItemsService(ShoppingState state)
+    public ItemsService(ShoppingState state, IFirebaseSyncService firebaseSync)
     {
         this.state = state;
+        this.firebaseSync = firebaseSync;
+
     }
 
-    public Dictionary<ItemDto, int> GetShoppingList() => state.Items;
-    public Dictionary<ItemDto, int> GetSubmittedItems() => state.ItemsInCart;
-    public ItemDto GetItemToModify() => state.ItemToModify;
+    public Dictionary<ItemDto, int> GetItems() => new Dictionary<ItemDto, int>(state.GetItems());
+    public Dictionary<ItemDto, int> GetItemsInCart() => new Dictionary<ItemDto, int>(state.GetItemsInCart());
+    public ItemDto GetItemToModify() => state.GetItemToModify();
 
-    public void AddItem(ItemDto item, int quantity)
+    public async Task AddItemAsync(ItemDto item, int quantity)
     {
-        if (!state.Items.TryAdd(item, quantity))
-        {
-            item.InCart = true;
-            state.Items[item] += quantity;
-        }
-        state.NotifyChange();
+        await firebaseSync.AddItemAsync(item, quantity);
     }
 
-    public void RemoveItem(ItemDto item, int quantity)
+    public async Task SubmitItemAsync(ItemDto item, int quantity)
     {
-        if (state.Items.ContainsKey(item))
-        {
-            item.InCart = false;
-            state.Items[item] -= quantity;
-            if (state.Items[item] <= 0)
-                state.Items.Remove(item);
-
-            state.NotifyChange();
-        }
+        await firebaseSync.SubmitItemAsync(item, quantity);
     }
 
-    public void SubmitItem(ItemDto item, int quantity)
+    public async Task RemoveItemAsync(ItemDto item, int quantity)
     {
-        state.ItemsInCart[item] = quantity;
-        RemoveItem(item, quantity);
-    }
+        await firebaseSync.RemoveItemAsync(item, quantity);
 
-    public void ModifyItem(ItemDto item, ItemDto newitem, int amount)
-    {
-        if (state.Items.TryGetValue(item, out int currentQuantity))
-        {
-            if (currentQuantity == -amount)
-            {
-                RemoveItem(item, currentQuantity);
-                return;
-            }
-
-            state.Items.Remove(item);
-
-            var updatedItem = new ItemDto
-            {
-                Name = newitem.Name,
-                Genre = newitem.Genre,
-                Description = newitem.Description,
-                Price = newitem.Price
-            };
-
-            state.Items[updatedItem] = currentQuantity + amount;
-            state.NotifyChange();
-        }
     }
 
     public void SetItemToModify(ItemDto item) => state.SetItemToModify(item);
+
+
+
+    // list view management
+    public string GetSelectedList()
+    {
+        return state.GetSelectedList();
+    }
+    public void SetSelectedList(string list)
+    {
+        state.SetSelectedList(list);
+    }
 }
 

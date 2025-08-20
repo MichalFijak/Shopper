@@ -27,7 +27,7 @@
         {
             newItem = oldItem;
         }
-        itemsService.ModifyItem(oldItem, newItem, amount);
+        itemsService.SetItemToModify(newItem);
         Navigation.NavigateTo("/edit-shopping-list");
     }
 

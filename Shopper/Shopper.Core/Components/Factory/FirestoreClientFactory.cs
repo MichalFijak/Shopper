@@ -5,9 +5,16 @@ namespace Shopper.Core.Components.Factory
 {
     public class FirestoreClientFactory : IFirestoreClientFactory
     {
-        public FirestoreDb Create()
+        private readonly FirestoreDb _firestoreDb;
+
+        public FirestoreClientFactory(FirestoreDb firestoreDb)
         {
-            return FirestoreDb.Create("your-project-id");
+            _firestoreDb = firestoreDb;
+        }
+
+        public FirestoreDb GetClient()
+        {
+            return _firestoreDb;
         }
     }
 }

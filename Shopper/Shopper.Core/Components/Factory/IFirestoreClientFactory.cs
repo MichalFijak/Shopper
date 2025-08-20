@@ -5,6 +5,6 @@ namespace Shopper.Core.Components.Factory
 {
     public interface IFirestoreClientFactory
     {
-        FirestoreDb Create();
+        FirestoreDb GetClient();
     }
 }

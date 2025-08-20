@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Shopper.Components.Heleprs;
 
 using Shopper.Data;
 using Shopper.Services;
@@ -34,7 +33,6 @@ namespace Shopper
 
 
             var provider = builder.Services.BuildServiceProvider();
-            EventWiring.Wire(provider);
             #endregion
             return builder.Build();
         }

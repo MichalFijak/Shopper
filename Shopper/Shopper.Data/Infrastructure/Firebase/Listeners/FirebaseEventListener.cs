@@ -1,4 +1,5 @@
 ﻿using Shopper.Core.Components.Entity;
+using Shopper.Core.Components.Interfaces;
 
 
 namespace Shopper.Data.Infrastructure.Firebase.Listeners

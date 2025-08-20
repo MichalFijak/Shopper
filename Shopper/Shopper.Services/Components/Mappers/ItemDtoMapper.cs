@@ -5,7 +5,7 @@ namespace Shopper.Services.Components.Mappers
 {
     public static class ItemDtoMapper
     {
-        public static ItemDto ToDto(this ItemModel item)
+        public static ItemDto ConvertToDto(this ItemModel item)
         {
             return new ItemDto
             {
@@ -16,7 +16,7 @@ namespace Shopper.Services.Components.Mappers
                 InCart = item.InCart
             };
         }
-        public static ItemModel ToModel(this ItemDto itemDto)
+        public static ItemModel ConvertToModel(this ItemDto itemDto)
         {
             return new ItemModel
             {
@@ -24,6 +24,21 @@ namespace Shopper.Services.Components.Mappers
                 InCart = itemDto.InCart,
                 Description = itemDto.ToDescription()
             };
+        }
+        public static Dictionary<ItemDto, int> ConvertToDto(this Dictionary<ItemModel, int> items)
+        {
+            return items.ToDictionary(
+                kvp => kvp.Key.ConvertToDto(),
+                kvp => kvp.Value
+            );
+        }
+
+        public static Dictionary<ItemModel, int> ConvertToModel(this Dictionary<ItemDto, int> items)
+        {
+            return items.ToDictionary(
+                kvp => kvp.Key.ConvertToModel(),
+                kvp => kvp.Value
+            );
         }
 
         private static ItemModelDescription ToDescription(this ItemDto itemDto)
@@ -35,6 +50,8 @@ namespace Shopper.Services.Components.Mappers
                 Price = itemDto.Price
             };
         }
+
+
     }
 
 }

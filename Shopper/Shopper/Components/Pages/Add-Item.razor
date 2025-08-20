@@ -15,7 +15,7 @@
 
     private void SaveItem()
     {
-        itemsService.AddItem(newItem,1);
+        itemsService.AddItemAsync(newItem,1);
         Navigation.NavigateTo("/edit-shopping-list");
     }
 

@@ -7,7 +7,7 @@ namespace Shopper.Data.Infrastructure.Firebase.Webhooks
 {
     public class FirebaseWebhookHandler(IFirestoreClientFactory firebaseClientFactory) : IFirebaseWebhookHandler
     {
-        private readonly FirestoreDb firebaseClient = firebaseClientFactory.Create();
+        private readonly FirestoreDb firebaseClient = firebaseClientFactory.GetClient();
 
         public async Task<ItemModel> GetItemAsync(string path)
         {

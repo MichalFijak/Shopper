@@ -9,7 +9,7 @@
 </div>
 
 <ul>
-    @foreach (var item in shoppingList)
+    @foreach (var item in items)
     {
         <li>
             <div @onclick="() => NavigateToModifyItem(item.Key)">
@@ -25,10 +25,11 @@
 
 @code {
 
-    protected Dictionary<ItemDto, int> shoppingList = new();
+    protected Dictionary<ItemDto, int> items = new();
+
     protected override void OnInitialized()
     {
-        shoppingList = itemsService.GetShoppingList();
+        items = itemsService.GetItems();
     }
 
     private void NavigateToAddItem()
@@ -44,6 +45,6 @@
     }
     private void RemoveItem(KeyValuePair<ItemDto, int> item)
     {
-        itemsService.RemoveItem(item.Key, item.Value);
+        itemsService.RemoveItemAsync(item.Key, item.Value);
     }
 }

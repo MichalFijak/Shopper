@@ -1,6 +1,6 @@
 ﻿using Shopper.Core.Components.Entity;
 
-namespace Shopper.Data.Infrastructure.Firebase.Listeners
+namespace Shopper.Core.Components.Interfaces
 {
     public interface IFirebaseEventListener
     {
@@ -10,6 +10,7 @@ namespace Shopper.Data.Infrastructure.Firebase.Listeners
         public void HandleItems(Dictionary<ItemModel, int> items);
 
         public void HandleSubmittedItems(Dictionary<ItemModel, int> submittedItems);
+
 
     }
 }

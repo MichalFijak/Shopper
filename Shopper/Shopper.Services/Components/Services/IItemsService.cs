@@ -4,13 +4,18 @@ using Shopper.Services.Components.Dtos;
 
 public interface IItemsService
 {
-    void AddItem(ItemDto item, int quantity);
-    ItemDto GetItemToModify();
-    Dictionary<ItemDto, int> GetShoppingList();
-    Dictionary<ItemDto, int> GetSubmittedItems();
-    void ModifyItem(ItemDto item, ItemDto newitem, int amount);
-    void RemoveItem(ItemDto item, int quantity);
-    void SetItemToModify(ItemDto item);
-    void SubmitItem(ItemDto item, int quantity);
+    public Task AddItemAsync(ItemDto item, int quantity);
+    public ItemDto GetItemToModify();
+    public Task SubmitItemAsync(ItemDto item, int quantity);
+
+    public Task RemoveItemAsync(ItemDto item, int quantity);
+
+    public void SetItemToModify(ItemDto item);
+
+    public Dictionary<ItemDto, int> GetItems();
+    public Dictionary<ItemDto, int> GetItemsInCart();
+    public string GetSelectedList();
+
+    public void SetSelectedList(string list);
 }
 

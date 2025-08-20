@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Google.Cloud.Firestore;
+using Microsoft.Extensions.DependencyInjection;
 using Shopper.Core.Components.Factory;
 using Shopper.Core.Components.Interfaces;
 using Shopper.Data.Components.Webhooks;
@@ -12,14 +13,20 @@ namespace Shopper.Data
         public static IServiceCollection AddDataDependecies(this IServiceCollection services)
         {
             services.AddSingleton<IFirebaseEventListener, FirebaseEventListener>();
-            services.AddSingleton<IFirestoreClientFactory, FirestoreClientFactory>();
+            services.AddSingleton<IFirestoreClientFactory, FirestoreClientFactory>( sp=>
+            {
+                var projectId = "shopper-bf898";
+                var credentialPath = "path/to/your/credentials.json";
+
+                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credentialPath);
+                var db = FirestoreDb.Create(projectId);
+                return new FirestoreClientFactory(db);
+            });
             services.AddTransient<IFirebaseWebhookHandler, FirebaseWebhookHandler>();
-            // Register your data-related services here
-            // Example: services.AddScoped<IRepository, RepositoryImplementation>();
+
             return services;
         }
     }
     
-        //implementations of repositories, EF Core or SQLite integrations, remote API calls, etc. It references Core
     
 }
