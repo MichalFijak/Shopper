@@ -4,6 +4,8 @@ namespace Shopper.Services.Components.Services
 {
     public interface IFirebaseSyncService
     {
+        public Task<Dictionary<ItemDto, int>> GetAllItemsAsync();
+
         public Task AddItemAsync(ItemDto item, int quantity);
 
         public Task SubmitItemAsync(ItemDto item, int quantity);

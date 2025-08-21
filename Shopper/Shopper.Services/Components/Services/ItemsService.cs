@@ -36,9 +36,6 @@ public class ItemsService : IItemsService
 
     public void SetItemToModify(ItemDto item) => state.SetItemToModify(item);
 
-
-
-    // list view management
     public string GetSelectedList()
     {
         return state.GetSelectedList();

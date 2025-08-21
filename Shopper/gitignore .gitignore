@@ -1,0 +1,11 @@
+# Firebase path
+*.json
+
+# Application settings
+appsettings.json
+**/appsettings.json
+
+# Secrets
+secrets.json
+**/secrets.json
+**/Properties/Secrets/credentials.json
