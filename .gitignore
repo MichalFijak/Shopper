@@ -63,3 +63,9 @@ wwwroot/
 # Temporary files
 *.tmp
 *.temp
+
+# Credentials
+.credentials.json
+**/.credentials.json
+
+
