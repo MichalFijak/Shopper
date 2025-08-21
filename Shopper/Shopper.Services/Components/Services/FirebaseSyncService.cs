@@ -62,5 +62,28 @@ namespace Shopper.Services.Components.Services
             var docRef = _db.Collection(_collectionPath).Document(item.Name);
             await docRef.DeleteAsync();
         }
+
+        public async Task<Dictionary<ItemDto, int>> GetAllItemsAsync()
+        {
+            var snapshot = await _db.Collection(_collectionPath).GetSnapshotAsync();
+            var result = new Dictionary<ItemDto, int>();
+
+            foreach (var doc in snapshot.Documents)
+            {
+                var model = doc.ConvertTo<ItemModel>();
+                var dto = new ItemDto
+                {
+                    Name = model.Name,
+                    Description = model.Description.Description,
+                    Genre = model.Description.Genre,
+                    Price = model.Description.Price,
+                    InCart = model.InCart
+                };
+
+                result[dto] = 1; // You can adjust quantity logic as needed
+            }
+
+            return result;
+        }
     }
 }
