@@ -1,10 +1,9 @@
 ﻿@page "/shopping-list"
 
-@using Shopper.Components.State
 @using Shopper.Services.Components.Dtos
+@using Shopper.Services.Components.State
 @inject IItemsService itemsService
-@inject ShoppingState state
-<h1>@state.SelectedList</h1>
+<h1>SelectedList</h1>
 <div>
     <h2>Choose a list:</h2>
     <div>
@@ -13,14 +12,14 @@
     <label><input type="radio" name="listSelection" value="Nabial" checked="@IsSelected("Nabial")" @onchange="OnSelectionChanged" /> Nabial</label>
     <label><input type="radio" name="listSelection" value="Koszyk" checked="@IsSelected("Koszyk")" @onchange="OnSelectionChanged" /> Koszyk</label>
     </div>
-    <p>SelectedList: '@state.SelectedList'</p>
+    <p>SelectedList: '@selectedList'</p>
 </div>
 
 
-@if (state.SelectedList == "Actual_List")
+@if (selectedList == "Actual_List")
 {
     <ul>
-        @foreach (var item in state.Items)
+        @foreach (var item in items)
         {
 
             <li>
@@ -31,7 +30,7 @@
 
     </ul>
 }
-else if (state.SelectedList == "Kuzyni")
+else if (selectedList == "Kuzyni")
 {
     <ul>
         <li>Dog</li>
@@ -39,7 +38,7 @@ else if (state.SelectedList == "Kuzyni")
         <li>Elephant</li>
     </ul>
 }
-else if (state.SelectedList == "Nabial")
+else if (selectedList == "Nabial")
 {
     <ul>
         <li>Red</li>
@@ -47,10 +46,10 @@ else if (state.SelectedList == "Nabial")
         <li>Green</li>
     </ul>
 }
-else if (state.SelectedList == "Koszyk")
+else if (selectedList == "Koszyk")
 {
     <ul>
-        @foreach (var item in state.ItemsInCart)
+        @foreach (var item in itemsInCart)
         {
 
             <li>
@@ -64,25 +63,32 @@ else if (state.SelectedList == "Koszyk")
 
 @code {
 
+    protected string selectedList = "Actual_List";
+    protected Dictionary<ItemDto, int> items = new();
+    protected Dictionary<ItemDto, int> itemsInCart = new();
+
     protected override void OnInitialized()
     {
-        state.OnChange += StateHasChanged;
+        this.selectedList = itemsService.GetSelectedList();
+        this.items = itemsService.GetItems();
+        this.itemsInCart = itemsService.GetItemsInCart();
+
     }
 
     private void OnSelectionChanged(ChangeEventArgs e)
     {
-        state.SetSelectedList(e.Value?.ToString() ?? "Actual_List");
+        selectedList = e.Value?.ToString() ?? "Actual_List";
+        itemsService.SetSelectedList(selectedList);
     }
 
     private bool IsSelected(string value)
     {
-        return state.SelectedList == value;
+        return selectedList == value;
     }
 
     private void SubmitItem(ItemDto item, int itemCount)
     {
-        itemsService.SubmitItem(item, itemCount);
-
+        itemsService.SubmitItemAsync(item, itemCount);
     }
 
 

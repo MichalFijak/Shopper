@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Shopper.Components.State;
+using Shopper.Services.Components.Policies;
+using Shopper.Services.Components.Services;
+using Shopper.Services.Components.State;
 
 namespace Shopper.Services
 {
@@ -8,9 +10,10 @@ namespace Shopper.Services
 
         public static IServiceCollection AddServicesDependecies(this IServiceCollection services)
         {
-            // Register your data-related services here
-            // Example: services.AddScoped<IRepository, RepositoryImplementation>();
+
             services.AddScoped<IItemsService, ItemsService>();
+            services.AddTransient<ISegregationPolicy, SegregationPolicy>();
+            services.AddTransient<IFirebaseSyncService, FirebaseSyncService>();
             services.AddSingleton<ShoppingState>();
             return services;
         }
