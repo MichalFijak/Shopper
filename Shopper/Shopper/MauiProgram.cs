@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 using Shopper.Data;
 using Shopper.Services;
@@ -10,6 +11,11 @@ namespace Shopper
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
+
+            var basePath = AppContext.BaseDirectory;
+            var configPath = Path.Combine(basePath, "appsettings.json");
+            builder.Configuration.AddJsonFile(configPath, optional: false, reloadOnChange: true);
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -24,12 +30,9 @@ namespace Shopper
     		builder.Logging.AddDebug();
 #endif
 
-
-
-
             #region Services Registration
             builder.Services.AddServicesDependecies();
-            builder.Services.AddDataDependecies();
+            builder.Services.AddDataDependecies(builder.Configuration);
 
 
             var provider = builder.Services.BuildServiceProvider();
@@ -38,3 +41,5 @@ namespace Shopper
         }
     }
 }
+
+
