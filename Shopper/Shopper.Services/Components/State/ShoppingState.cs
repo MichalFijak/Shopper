@@ -42,6 +42,17 @@ namespace Shopper.Services.Components.State
         public ItemDto GetItemToModify() => itemToModify;
         public string GetSelectedList() => selectedList;
 
+        public void UpdateItems(Dictionary<ItemDto, int> updatedItems)
+        {
+            items = updatedItems;
+            NotifyChange();
+        }
+        public void UpdateItemsInCart(Dictionary<ItemDto, int> updatedItemsInCart)
+        {
+            itemsInCart = updatedItemsInCart;
+            NotifyChange();
+        }
+
         public void SetItemToModify(ItemDto item)
         {
             itemToModify = item;

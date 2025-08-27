@@ -27,9 +27,9 @@
 
     protected Dictionary<ItemDto, int> items = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        items = itemsService.GetItems();
+        //items = await itemsService.GetItemsAsync();
     }
 
     private void NavigateToAddItem()

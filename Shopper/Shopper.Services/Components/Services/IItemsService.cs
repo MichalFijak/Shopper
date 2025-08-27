@@ -12,7 +12,7 @@ public interface IItemsService
 
     public void SetItemToModify(ItemDto item);
 
-    public Dictionary<ItemDto, int> GetItems();
+    public Task<Dictionary<ItemDto, int>> GetItemsAsync();
     public Dictionary<ItemDto, int> GetItemsInCart();
     public string GetSelectedList();
 

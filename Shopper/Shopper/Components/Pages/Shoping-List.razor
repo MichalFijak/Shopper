@@ -67,12 +67,11 @@ else if (selectedList == "Koszyk")
     protected Dictionary<ItemDto, int> items = new();
     protected Dictionary<ItemDto, int> itemsInCart = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         this.selectedList = itemsService.GetSelectedList();
-        this.items = itemsService.GetItems();
-        this.itemsInCart = itemsService.GetItemsInCart();
-
+        this.items = await itemsService.GetItemsAsync();
+        //this.itemsInCart = itemsService.GetItemsInCart();
     }
 
     private void OnSelectionChanged(ChangeEventArgs e)

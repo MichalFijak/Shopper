@@ -1,6 +1,7 @@
-﻿using Google.Cloud.Firestore;
+﻿
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shopper.Core.Components.Configs;
 using Shopper.Core.Components.Factory;
 using Shopper.Core.Components.Interfaces;
 using Shopper.Data.Infrastructure.Firebase.Listeners;
@@ -10,25 +11,35 @@ namespace Shopper.Data
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddDataDependecies(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDataDependecies(this IServiceCollection services)
         {
-            services.AddSingleton<IFirebaseEventListener, FirebaseEventListener>();
-            services.AddSingleton<IFirestoreClientFactory, FirestoreClientFactory>(sp =>
-            {
-                var projectId = configuration["Firestore:ProjectId"];
-                var credentialRelativePath = configuration["Firestore:CredentialPath"];
-                var basePath = AppContext.BaseDirectory;
-                var credentialPath = Path.Combine(basePath, credentialRelativePath);
-                if (!File.Exists(credentialPath))
-                {
-                    throw new FileNotFoundException(
-                        "Firebase credentials file not found. Please add credentials.json to the Secrets folder.");
-                }
 
-                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credentialPath);
-                var db = FirestoreDb.Create(projectId);
-                return new FirestoreClientFactory(db);
+            var basePath = AppContext.BaseDirectory;
+
+            var config = new ConfigurationBuilder()
+                                .SetBasePath(basePath)
+                                .AddJsonFile("appsettings.json", optional: true)
+                                .Build();
+
+
+            var projectId = config["Firestore:ProjectId"];
+            var credentialPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, config["Firestore:CredentialPath"]));
+
+            if (!File.Exists(credentialPath))
+                throw new FileNotFoundException($"Firestore credentials not found at: {credentialPath}");
+
+
+            services.Configure<FirestoreOptions>(options =>
+            {
+                options.ProjectId = projectId;
+                options.CredentialPath = credentialPath;
             });
+            services.AddSingleton<IFirestoreClientFactory, FirestoreClientFactory>(options =>
+            {
+                return new FirestoreClientFactory(options.GetRequiredService<Microsoft.Extensions.Options.IOptions<FirestoreOptions>>());
+            });
+
+            services.AddSingleton<IFirebaseEventListener, FirebaseEventListener>();
             services.AddTransient<IFirebaseWebhookHandler, FirebaseWebhookHandler>();
 
             return services;
