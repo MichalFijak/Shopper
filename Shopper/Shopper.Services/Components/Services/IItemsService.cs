@@ -1,21 +1,20 @@
 ﻿
 
+using Shopper.Core.Components.Dtos;
 using Shopper.Services.Components.Dtos;
 
 public interface IItemsService
 {
-    public Task AddItemAsync(ItemDto item, int quantity);
-    public ItemDto GetItemToModify();
-    public Task SubmitItemAsync(ItemDto item, int quantity);
-
-    public Task RemoveItemAsync(ItemDto item, int quantity);
-
-    public void SetItemToModify(ItemDto item);
-
-    public Task<Dictionary<ItemDto, int>> GetItemsAsync();
-    public Dictionary<ItemDto, int> GetItemsInCart();
-    public string GetSelectedList();
-
-    public void SetSelectedList(string list);
+    Task AddItemAsync(ItemDto item, int quantity);
+    Task<List<ItemGroupDto>> GetItems();
+    Task<Dictionary<ItemDto, int>> GetItemsAsync();
+    ItemDto GetItemToModify();
+    string GetSelectedList();
+    Task RemoveItemAsync(ItemDto item, int quantity);
+    void SetItemToModify(ItemDto item);
+    void SetSelectedList(string list);
+    Task StartRealtimeSyncAsync();
+    void StopRealtimeSync();
+    Task SubmitItemAsync(ItemDto item, int quantity);
 }
 

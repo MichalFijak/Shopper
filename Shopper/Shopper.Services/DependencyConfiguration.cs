@@ -1,9 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Shopper.Core.Components.Configs;
-using Shopper.Core.Components.Factory;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shopper.Services.Components.Policies;
-using Shopper.Services.Components.Services;
 using Shopper.Services.Components.State;
 
 namespace Shopper.Services
@@ -15,8 +11,7 @@ namespace Shopper.Services
         {
 
             services.AddScoped<IItemsService, ItemsService>();
-            services.AddTransient<ISegregationPolicy, SegregationPolicy>();
-            services.AddTransient<IFirebaseSyncService, FirebaseSyncService>();
+            services.AddTransient<ICartPolicy, CartPolicy>();
  
             services.AddSingleton<ShoppingState>();
 

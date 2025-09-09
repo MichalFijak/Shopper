@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shopper.Core.Components.Configs;
 using Shopper.Core.Components.Factory;
 using Shopper.Core.Components.Interfaces;
+using Shopper.Data.Components.Webhooks;
 using Shopper.Data.Infrastructure.Firebase.Listeners;
 using Shopper.Data.Infrastructure.Firebase.Webhooks;
 
@@ -41,6 +42,7 @@ namespace Shopper.Data
 
             services.AddSingleton<IFirebaseEventListener, FirebaseEventListener>();
             services.AddTransient<IFirebaseWebhookHandler, FirebaseWebhookHandler>();
+            services.AddTransient<IFirebaseEventSource, FirebaseEventSource>();
 
             return services;
         }

@@ -4,3 +4,17 @@
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
 </Router>
+
+@inject IItemsService ItemsService
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ItemsService.StartRealtimeSyncAsync();
+    }
+
+    public void Dispose()
+    {
+        ItemsService.StopRealtimeSync();
+    }
+}

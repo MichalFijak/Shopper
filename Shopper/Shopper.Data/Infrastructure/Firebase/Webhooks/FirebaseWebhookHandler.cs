@@ -1,4 +1,5 @@
-﻿using Google.Cloud.Firestore;
+﻿using System.Diagnostics;
+using Google.Cloud.Firestore;
 using Shopper.Core.Components.Entity;
 using Shopper.Core.Components.Factory;
 using Shopper.Core.Components.Interfaces;
@@ -43,6 +44,22 @@ namespace Shopper.Data.Infrastructure.Firebase.Webhooks
             await docRef.DeleteAsync();
         }
 
+        public async Task<List<ItemModel>> GetAllItemsAsync()
+        {
+            var items = new List<ItemModel>();
+            var itemListCollection = firebaseClient.Collection("ItemList");
+            var snapshot = await itemListCollection.GetSnapshotAsync();
+
+            foreach (var doc in snapshot.Documents)
+            {
+                if (doc.Exists)
+                {
+                    items.Add(doc.ConvertTo<ItemModel>());
+                }
+            }
+
+            return items;
+        }
     }
 
 }

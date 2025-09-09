@@ -1,5 +1,6 @@
 ﻿@page "/shopping-list"
 
+@using Shopper.Core.Components.Dtos
 @using Shopper.Services.Components.Dtos
 @using Shopper.Services.Components.State
 @inject IItemsService itemsService
@@ -19,15 +20,18 @@
 @if (selectedList == "Actual_List")
 {
     <ul>
-        @foreach (var item in items)
+        @foreach (var group in items.Where(g => g.InCart == false))
         {
-
-            <li>
-                <span>Nazwa: @item.Key.Name</span><span>Genre: @item.Key.Genre</span><span>Amount: @item.Value</span>
-                <button @onclick="() => SubmitItem(item.Key,item.Value)">remove item</button>
-            </li>
+            @foreach (var kvp in group.Items)
+            {
+                <li>
+                    <span>Nazwa: @kvp.Key.Name</span>
+                    <span> Rodzaj: @kvp.Key.Genre</span>
+                    <span> Ilosc: @kvp.Value</span>
+                    <button @onclick="() => SubmitItem(kvp.Key, kvp.Value)">remove item</button>
+                </li>
+            }
         }
-
     </ul>
 }
 else if (selectedList == "Kuzyni")
@@ -49,29 +53,30 @@ else if (selectedList == "Nabial")
 else if (selectedList == "Koszyk")
 {
     <ul>
-        @foreach (var item in itemsInCart)
+        @foreach (var group in items.Where(g => g.InCart == true))
         {
-
-            <li>
-                <span>Nazwa: @item.Key.Name</span><span>Genre: @item.Key.Genre</span><span>Amount: @item.Value</span>
-@*                 <button @onclick="() => SubmitItem(item.Key,item.Value)">remove item</button>
- *@            </li>
+            @foreach (var kvp in group.Items)
+            {
+                <li>
+                    <span>Nazwa: @kvp.Key.Name</span>
+                    <span> Rodzaj: @kvp.Key.Genre</span>
+                    <span> Ilosc: @kvp.Value</span>
+                </li>
+            }
         }
-
     </ul>
 }
 
 @code {
 
     protected string selectedList = "Actual_List";
-    protected Dictionary<ItemDto, int> items = new();
+    protected List<ItemGroupDto> items = new();
     protected Dictionary<ItemDto, int> itemsInCart = new();
 
     protected override async Task OnInitializedAsync()
     {
         this.selectedList = itemsService.GetSelectedList();
-        this.items = await itemsService.GetItemsAsync();
-        //this.itemsInCart = itemsService.GetItemsInCart();
+        this.items = await itemsService.GetItems();
     }
 
     private void OnSelectionChanged(ChangeEventArgs e)
