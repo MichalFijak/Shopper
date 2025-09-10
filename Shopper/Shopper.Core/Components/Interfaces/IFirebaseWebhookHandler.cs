@@ -8,6 +8,6 @@ namespace Shopper.Core.Components.Interfaces
         Task DeleteItemAsync(string path);
         Task<ItemModel> GetItemAsync(string path);
         Task UpdateItemAsync(string path, ItemModel data);
-        Task<List<ItemModel>> GetAllItemsAsync(); // Added for batch fetch
+        Task<List<ItemModel>> GetAllItemsAsync(); 
     }
 }

@@ -17,6 +17,7 @@
     private int amount;
     private void SaveItem()
     {
+        //TODO : This should goes to service. Then it gonna be easier to handle and proceed.
         var oldItem = itemsService.GetItemToModify();
         if((newItem == null || string.IsNullOrWhiteSpace(newItem.Name) || string.IsNullOrWhiteSpace(newItem.Genre)) && amount<=0)
         {

@@ -7,19 +7,12 @@ namespace Shopper.Data.Infrastructure.Firebase.Listeners
 
     public class FirebaseEventListener : IFirebaseEventListener
     {
-        public event Action<Dictionary<ItemModel, int>>? ItemsUpdated;
-        public event Action<Dictionary<ItemModel, int>>? SubmittedItemsUpdated;
+        public event Action<List<ItemModel>>? ItemsUpdated;
 
 
-        public void HandleItems(Dictionary<ItemModel, int> items)
+        public void HandleItems(List<ItemModel> items)
         {
             ItemsUpdated?.Invoke(items);
         }
-
-        public void HandleSubmittedItems(Dictionary<ItemModel, int> submittedItems)
-        {
-            SubmittedItemsUpdated?.Invoke(submittedItems);
-        }
-
     }
 }

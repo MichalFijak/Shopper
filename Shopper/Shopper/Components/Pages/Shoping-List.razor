@@ -22,13 +22,12 @@
     <ul>
         @foreach (var group in items.Where(g => g.InCart == false))
         {
-            @foreach (var kvp in group.Items)
+            @foreach (var item in group.Items)
             {
                 <li>
-                    <span>Nazwa: @kvp.Key.Name</span>
-                    <span> Rodzaj: @kvp.Key.Genre</span>
-                    <span> Ilosc: @kvp.Value</span>
-                    <button @onclick="() => SubmitItem(kvp.Key, kvp.Value)">remove item</button>
+                    <span>Nazwa: @item.Name</span>
+                    <span> Rodzaj: @item.Genre</span>
+                    <button @onclick="() => SubmitItem(item)">remove item</button>
                 </li>
             }
         }
@@ -58,9 +57,8 @@ else if (selectedList == "Koszyk")
             @foreach (var kvp in group.Items)
             {
                 <li>
-                    <span>Nazwa: @kvp.Key.Name</span>
-                    <span> Rodzaj: @kvp.Key.Genre</span>
-                    <span> Ilosc: @kvp.Value</span>
+                    <span>Nazwa: @kvp.Name</span>
+                    <span> Rodzaj: @kvp.Genre</span>
                 </li>
             }
         }
@@ -71,12 +69,11 @@ else if (selectedList == "Koszyk")
 
     protected string selectedList = "Actual_List";
     protected List<ItemGroupDto> items = new();
-    protected Dictionary<ItemDto, int> itemsInCart = new();
 
     protected override async Task OnInitializedAsync()
     {
         this.selectedList = itemsService.GetSelectedList();
-        this.items = await itemsService.GetItems();
+        this.items = await itemsService.GetItemsAsync();
     }
 
     private void OnSelectionChanged(ChangeEventArgs e)
@@ -90,9 +87,9 @@ else if (selectedList == "Koszyk")
         return selectedList == value;
     }
 
-    private void SubmitItem(ItemDto item, int itemCount)
+    private void SubmitItem(ItemDto item)
     {
-        itemsService.SubmitItemAsync(item, itemCount);
+        itemsService.RemoveItemAsync(item);
     }
 
 

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Google.Cloud.Firestore;
+﻿using Google.Cloud.Firestore;
 using Shopper.Core.Components.Entity;
 using Shopper.Core.Components.Factory;
 using Shopper.Core.Components.Interfaces;

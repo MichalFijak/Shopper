@@ -2,16 +2,16 @@
 using Shopper.Core.Components.Interfaces;
 using Shopper.Services.Components.Dtos;
 using Shopper.Services.Components.Mappers;
+using System.Diagnostics;
+
 
 namespace Shopper.Services.Components.State
 {
     public class ShoppingState
     {
-
         private readonly IFirebaseEventListener firebaseEventListener;
 
-        private Dictionary<ItemDto, int> items { get; set; } = [];
-        private Dictionary<ItemDto, int> itemsInCart { get; set; } = [];
+        private List<ItemDto> items { get; set; } = new();
         private ItemDto itemToModify { get; set; } = new();
         private string selectedList { get; set; } = "Actual_List";
 
@@ -20,42 +20,32 @@ namespace Shopper.Services.Components.State
         public ShoppingState(IFirebaseEventListener firebaseEventListener)
         {
             this.firebaseEventListener = firebaseEventListener;
-
             firebaseEventListener.ItemsUpdated += HandleItemsUpdated;
-            firebaseEventListener.SubmittedItemsUpdated += HandleSubmittedItemsUpdated;
         }
 
-        private void HandleItemsUpdated(Dictionary<ItemModel, int> itemsUpdated)
+        private void HandleItemsUpdated(List<ItemModel> itemsUpdated)
         {
-            items = itemsUpdated.ConvertToDto();
+            items = itemsUpdated.Select(i => i.ConvertToDto()).ToList();
             NotifyChange();
         }
 
-        private void HandleSubmittedItemsUpdated(Dictionary<ItemModel, int> submittedItems)
-        {
-            itemsInCart = submittedItems.ConvertToDto();
-            NotifyChange();
-        }
-
-        public IReadOnlyDictionary<ItemDto, int> GetItems() => items;
-        public IReadOnlyDictionary<ItemDto, int> GetItemsInCart() => itemsInCart;
+        public IReadOnlyList<ItemDto> GetItems() => items;
+        public IReadOnlyList<ItemDto> GetItemsInCart() => items.Where(i => i.InCart).ToList();
         public ItemDto GetItemToModify() => itemToModify;
         public string GetSelectedList() => selectedList;
 
-        public void UpdateItems(Dictionary<ItemDto, int> updatedItems)
+        public void UpdateItems(List<ItemDto> updatedItems)
         {
             items = updatedItems;
+
             NotifyChange();
-        }
-        public void UpdateItemsInCart(Dictionary<ItemDto, int> updatedItemsInCart)
-        {
-            itemsInCart = updatedItemsInCart;
-            NotifyChange();
+            Debug.WriteLine(OnChange?.GetInvocationList().Length ?? 0);
         }
 
         public void SetItemToModify(ItemDto item)
         {
             itemToModify = item;
+
             NotifyChange();
         }
 

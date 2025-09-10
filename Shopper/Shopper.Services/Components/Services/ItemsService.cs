@@ -29,59 +29,32 @@ public class ItemsService : IItemsService
         this.firebaseEventSource = firebaseEventSource;
     }
 
-    public async Task<Dictionary<ItemDto, int>> GetItemsAsync()
+    public async Task<List<ItemGroupDto>> GetItemsAsync()
     {
-        Dictionary<ItemDto, int> items = new();
-
         try
         {
             var models = await firebaseWebhookHandler.GetAllItemsAsync();
-            foreach (var model in models)
-            {
-                var dto = model.ConvertToDto();
-                items[dto] = 1; // Default quantity, adjust if needed
-            }
+            var items = models.Select(m => m.ConvertToDto()).ToList();
+            state.UpdateItems(items);
+            return cartPolicy.PartitionByCartStatus(items);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching items: {ex.Message}");
+            return cartPolicy.PartitionByCartStatus(new List<ItemDto>(state.GetItems()));
         }
-
-        if (items != null && items.Count > 0)
-        {
-            state.UpdateItems(items);
-            return items;
-        }
-        else
-        {
-            return new Dictionary<ItemDto, int>(state.GetItems());
-        }
-    }
-
-    public async Task<List<ItemGroupDto>> GetItems()
-    {
-        var items = await GetItemsAsync();
-        return cartPolicy.PartitionByCartStatus(items);
     }
 
     public ItemDto GetItemToModify() => state.GetItemToModify();
 
-    public async Task AddItemAsync(ItemDto item, int quantity)
-    {
-        var model = item.ConvertToModel();
-        var path = $"ItemList/{model.Name}"; // Example path, adjust as needed
-        await firebaseWebhookHandler.CreateItemAsync(path, model);
-    }
-
-    public async Task SubmitItemAsync(ItemDto item, int quantity)
+    public async Task AddItemAsync(ItemDto item)
     {
         var model = item.ConvertToModel();
         var path = $"ItemList/{model.Name}";
-        model.InCart = !model.InCart;
-        await firebaseWebhookHandler.UpdateItemAsync(path, model);
+        await firebaseWebhookHandler.CreateItemAsync(path, model);
     }
 
-    public async Task RemoveItemAsync(ItemDto item, int quantity)
+    public async Task RemoveItemAsync(ItemDto item)
     {
         var model = item.ConvertToModel();
         var path = $"ItemList/{model.Name}";
@@ -105,12 +78,10 @@ public class ItemsService : IItemsService
         firebaseListener.ItemsUpdated -= OnItemsUpdated;
     }
 
-    private void OnItemsUpdated(Dictionary<ItemModel, int> updatedItems)
+    private void OnItemsUpdated(List<ItemModel> updatedItems)
     {
-        var updatedDtos = updatedItems.ToDictionary(
-            kvp => kvp.Key.ConvertToDto(),
-            kvp => kvp.Value);
-
+        var updatedDtos = updatedItems.Select(m => m.ConvertToDto()).ToList();
         state.UpdateItems(updatedDtos);
     }
+
 }

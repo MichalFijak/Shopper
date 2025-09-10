@@ -4,13 +4,8 @@ namespace Shopper.Core.Components.Interfaces
 {
     public interface IFirebaseEventListener
     {
-        event Action<Dictionary<ItemModel, int>>? ItemsUpdated;
-        event Action<Dictionary<ItemModel, int>>? SubmittedItemsUpdated;
+        event Action<List<ItemModel>>? ItemsUpdated;
 
-        public void HandleItems(Dictionary<ItemModel, int> items);
-
-        public void HandleSubmittedItems(Dictionary<ItemModel, int> submittedItems);
-
-
+        void HandleItems(List<ItemModel> items);
     }
 }
