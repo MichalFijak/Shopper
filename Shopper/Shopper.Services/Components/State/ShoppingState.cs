@@ -21,27 +21,64 @@ namespace Shopper.Services.Components.State
         {
             this.firebaseEventListener = firebaseEventListener;
             firebaseEventListener.ItemsUpdated += HandleItemsUpdated;
+            firebaseEventListener.ItemsRemoved += HandleItemRemoved;
         }
 
         private void HandleItemsUpdated(List<ItemModel> itemsUpdated)
         {
-            items = itemsUpdated.Select(i => i.ConvertToDto()).ToList();
+            Debug.WriteLine($"HandleItemsUpdated called with {itemsUpdated.Count} items");
+            Debug.WriteLine($"Before update: {items.Count} items");
+            foreach (var updated in itemsUpdated)
+            {
+                var dto = updated.ConvertToDto();
+                var index = items.FindIndex(i => i.Name == dto.Name);
+
+                if (index >= 0)
+                {
+                    items[index] = dto; 
+                }
+                else
+                {
+                    items.Add(dto); 
+                }
+            }
+            Debug.WriteLine($"After update: {items.Count} items");
+
             NotifyChange();
         }
 
-        public IReadOnlyList<ItemDto> GetItems() => items;
+        public IReadOnlyList<ItemDto> GetItems()
+        {
+            return items;
+        }
         public IReadOnlyList<ItemDto> GetItemsInCart() => items.Where(i => i.InCart).ToList();
         public ItemDto GetItemToModify() => itemToModify;
         public string GetSelectedList() => selectedList;
 
         public void UpdateItems(List<ItemDto> updatedItems)
         {
-            items = updatedItems;
+            foreach (var updated in updatedItems)
+            {
+                var index = items.FindIndex(i => i.Name == updated.Name);
+                if (index >= 0)
+                {
+                    items[index] = updated;
+                }
+                else
+                {
+                    items.Add(updated);
+                }
+            }
 
             NotifyChange();
-            Debug.WriteLine(OnChange?.GetInvocationList().Length ?? 0);
         }
-
+        private void HandleItemRemoved(ItemModel item)
+        {
+            var name = item.Name;
+            Debug.WriteLine($"HandleItemRemoved called for item: {name}");
+            items.RemoveAll(i => i.Name == name);
+            NotifyChange();
+        }
         public void SetItemToModify(ItemDto item)
         {
             itemToModify = item;

@@ -17,18 +17,16 @@
     private int amount;
     private void SaveItem()
     {
-        //TODO : This should goes to service. Then it gonna be easier to handle and proceed.
-        var oldItem = itemsService.GetItemToModify();
+        
         if((newItem == null || string.IsNullOrWhiteSpace(newItem.Name) || string.IsNullOrWhiteSpace(newItem.Genre)) && amount<=0)
         {
-            // some error handling
             return;
         }
         if (newItem == null || string.IsNullOrWhiteSpace(newItem.Name) || string.IsNullOrWhiteSpace(newItem.Genre))
         {
-            newItem = oldItem;
+            return;
         }
-        itemsService.SetItemToModify(newItem);
+        itemsService.ModifyItemAsync(newItem);
         Navigation.NavigateTo("/edit-shopping-list");
     }
 

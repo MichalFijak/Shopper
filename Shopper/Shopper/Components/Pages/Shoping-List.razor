@@ -27,7 +27,8 @@
                 <li>
                     <span>Nazwa: @item.Name</span>
                     <span> Rodzaj: @item.Genre</span>
-                    <button @onclick="() => SubmitItem(item)">remove item</button>
+                    <button @onclick="() => SubmitItem(item)">Move to cart</button>
+                    <button @onclick="() => RemoveItem(item)">Remove item</button>
                 </li>
             }
         }
@@ -59,6 +60,9 @@ else if (selectedList == "Koszyk")
                 <li>
                     <span>Nazwa: @kvp.Name</span>
                     <span> Rodzaj: @kvp.Genre</span>
+                    <button @onclick="() => MoveItemFromCart(kvp)">Move from cart</button>
+                    <button @onclick="() => RemoveItem(kvp)">Remove item</button>
+
                 </li>
             }
         }
@@ -66,31 +70,47 @@ else if (selectedList == "Koszyk")
 }
 
 @code {
-
     protected string selectedList = "Actual_List";
     protected List<ItemGroupDto> items = new();
 
     protected override async Task OnInitializedAsync()
     {
-        this.selectedList = itemsService.GetSelectedList();
-        this.items = await itemsService.GetItemsAsync();
+        selectedList = itemsService.GetSelectedList();
+        itemsService.OnItemsChanged += HandleItemsChanged;
+        items = await itemsService.RefreshItemsAsync();
     }
+
+    private void HandleItemsChanged()
+    {
+        items = itemsService.GetCachedItems();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SubmitItem(ItemDto item)
+    {
+        await itemsService.MoveToCartAsync(item);
+    }
+
+    private async Task RemoveItem(ItemDto item)
+    {
+        await itemsService.RemoveItemAsync(item);
+    }
+
+    private async Task MoveItemFromCart(ItemDto item)
+    {
+        await itemsService.MoveToCartAsync(item);
+    }
+
+    public void Dispose()
+    {
+        itemsService.OnItemsChanged -= HandleItemsChanged;
+    }
+
+    private bool IsSelected(string value) => selectedList == value;
 
     private void OnSelectionChanged(ChangeEventArgs e)
     {
         selectedList = e.Value?.ToString() ?? "Actual_List";
         itemsService.SetSelectedList(selectedList);
     }
-
-    private bool IsSelected(string value)
-    {
-        return selectedList == value;
-    }
-
-    private void SubmitItem(ItemDto item)
-    {
-        itemsService.RemoveItemAsync(item);
-    }
-
-
 }

@@ -1,4 +1,5 @@
-﻿using Shopper.Core.Components.Dtos;
+﻿using Google.Cloud.Firestore;
+using Shopper.Core.Components.Dtos;
 using Shopper.Core.Components.Entity;
 using Shopper.Core.Components.Interfaces;
 using Shopper.Data.Components.Webhooks;
@@ -6,6 +7,7 @@ using Shopper.Services.Components.Dtos;
 using Shopper.Services.Components.Mappers;
 using Shopper.Services.Components.Policies;
 using Shopper.Services.Components.State;
+using System.Diagnostics;
 
 public class ItemsService : IItemsService
 {
@@ -29,7 +31,14 @@ public class ItemsService : IItemsService
         this.firebaseEventSource = firebaseEventSource;
     }
 
-    public async Task<List<ItemGroupDto>> GetItemsAsync()
+        public event Action OnItemsChanged
+    {
+        add => state.OnChange += value;
+        remove => state.OnChange -= value;
+    }
+
+
+    public async Task<List<ItemGroupDto>> RefreshItemsAsync()
     {
         try
         {
@@ -45,8 +54,6 @@ public class ItemsService : IItemsService
         }
     }
 
-    public ItemDto GetItemToModify() => state.GetItemToModify();
-
     public async Task AddItemAsync(ItemDto item)
     {
         var model = item.ConvertToModel();
@@ -60,9 +67,36 @@ public class ItemsService : IItemsService
         var path = $"ItemList/{model.Name}";
         await firebaseWebhookHandler.DeleteItemAsync(path);
     }
+    public async Task MoveToCartAsync(ItemDto item)
+    {
+        var model = item.ConvertToModel();
+        model.InCart =! model.InCart;
+        var path = $"ItemList/{model.Name}";
+        await firebaseWebhookHandler.UpdateItemAsync(path, model);
+    }
+    public async Task ModifyItemAsync(ItemDto item)
+    {
+        var oldItem = state.GetItemToModify();
+        if (oldItem == null)
+        {
+            throw new InvalidOperationException("No item selected for modification.");
+        }
 
-    public void SetItemToModify(ItemDto item) => state.SetItemToModify(item);
+        var model = item.ConvertToModel();
 
+        var oldPath = $"ItemList/{oldItem.Name}";
+        var newPath = $"ItemList/{model.Name}";
+
+        if (oldItem.Name == item.Name)
+        {
+            await firebaseWebhookHandler.UpdateItemAsync(oldPath, model);
+        }
+        else
+        {
+            await firebaseWebhookHandler.DeleteItemAsync(oldPath);
+            await firebaseWebhookHandler.CreateItemAsync(newPath, model);
+        }
+    }
     public string GetSelectedList() => state.GetSelectedList();
 
     public void SetSelectedList(string list) => state.SetSelectedList(list);
@@ -70,7 +104,19 @@ public class ItemsService : IItemsService
     public async Task StartRealtimeSyncAsync()
     {
         firebaseListener.ItemsUpdated += OnItemsUpdated;
-        await firebaseEventSource.ListenToEventAsync("");
+
+        firebaseEventSource.ItemChanged += (item, changeType) =>
+        {
+            if (changeType == DocumentChange.Type.Removed)
+            {
+                firebaseListener.HandleItemRemoved(item);
+            }
+            else
+            {
+                firebaseListener.HandleItems(new List<ItemModel> { item });
+            }
+        };
+        await firebaseEventSource.ListenToEventAsync("ItemList");
     }
 
     public void StopRealtimeSync()
@@ -84,4 +130,17 @@ public class ItemsService : IItemsService
         state.UpdateItems(updatedDtos);
     }
 
+    public void SetItemToModify(ItemDto item)
+    {
+        state.SetItemToModify(item);
+
+    }
+
+    public List<ItemGroupDto> GetCachedItems()
+    {
+        var items = new List<ItemDto>(state.GetItems());
+        Debug.WriteLine($"GetCachedItems: {items.Count} items");
+        return cartPolicy.PartitionByCartStatus(items);
+
+    }
 }

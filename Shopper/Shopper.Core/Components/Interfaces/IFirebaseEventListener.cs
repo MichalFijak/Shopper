@@ -1,4 +1,5 @@
-﻿using Shopper.Core.Components.Entity;
+﻿using Google.Cloud.Firestore;
+using Shopper.Core.Components.Entity;
 
 namespace Shopper.Core.Components.Interfaces
 {
@@ -6,6 +7,11 @@ namespace Shopper.Core.Components.Interfaces
     {
         event Action<List<ItemModel>>? ItemsUpdated;
 
+        event Action<ItemModel>? ItemsRemoved;
+
         void HandleItems(List<ItemModel> items);
+
+        void HandleItemRemoved(ItemModel item);
+
     }
 }

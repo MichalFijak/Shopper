@@ -1,6 +1,7 @@
 ﻿using Google.Cloud.Firestore;
 using Shopper.Core.Components.Entity;
 using Shopper.Core.Components.Factory;
+using Shopper.Core.Components.Interfaces;
 using Shopper.Data.Components.Webhooks;
 using System.Diagnostics;
 
@@ -31,8 +32,7 @@ namespace Shopper.Data.Infrastructure.Firebase.Listeners
                     {
                         foreach (DocumentChange change in snapshot.Changes)
                         {
-                            Debug.WriteLine($"Change Type: {change.ChangeType}");
-                            Debug.WriteLine($"Document ID: {change.Document.Id}");
+
 
                             var item = change.Document.ConvertTo<ItemModel>();
                             ItemChanged?.Invoke(item, change.ChangeType);
@@ -58,5 +58,7 @@ namespace Shopper.Data.Infrastructure.Firebase.Listeners
                 await listener.StopAsync();
             }
         }
+
+
     }
 }

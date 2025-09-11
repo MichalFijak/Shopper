@@ -1,5 +1,6 @@
 ﻿using Shopper.Core.Components.Dtos;
 using Shopper.Services.Components.Dtos;
+using System.Diagnostics;
 
 namespace Shopper.Services.Components.Policies
 {
@@ -7,10 +8,14 @@ namespace Shopper.Services.Components.Policies
     {
         public List<ItemGroupDto> PartitionByCartStatus(List<ItemDto> items)
         {
-            return items
-                .GroupBy(i => i.InCart)
-                .Select(g => new ItemGroupDto { InCart = g.Key, Items = g.ToList() })
-                .ToList();
+            var inCart = items.Where(i => i.InCart).ToList();
+            var notInCart = items.Where(i => !i.InCart).ToList();
+            Debug.WriteLine($"Partitioned: {notInCart.Count} not in cart, {inCart.Count} in cart");
+            return new List<ItemGroupDto>
+            {
+                new ItemGroupDto { InCart = false, Items = notInCart },
+                new ItemGroupDto { InCart = true, Items = inCart }
+            };
         }
     }
 }
