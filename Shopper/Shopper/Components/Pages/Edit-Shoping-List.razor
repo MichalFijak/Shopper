@@ -1,35 +1,46 @@
 ﻿@page "/edit-shopping-list"
+@using Shopper.Core.Components.Dtos
 @using Shopper.Services.Components.Dtos
 @inject NavigationManager Navigation
 @inject IItemsService itemsService
-<h1> Edit Shopping list</h1>
-<div>
-<button class="btn btn-primary" @onclick="NavigateToAddItem">Add new item</button>
 
+<h1>Edit Shopping List</h1>
+
+<div>
+    <button class="btn btn-primary" @onclick="NavigateToAddItem">Add new item</button>
 </div>
 
 <ul>
-    @foreach (var item in items)
+    @foreach (var entity in items)
     {
-        <li>
-            <div @onclick="() => NavigateToModifyItem(item.Key)">
-                <span>@item.Key.Name</span>
-                <span>| rodzaj: @item.Key.Genre |</span>
-                <span> szt.@item.Value</span>
-            </div>
-        <button @onclick="() => RemoveItem(item)">remove item</button>
-        </li>
+        @foreach (var item in entity.Items)
+        {
+            <li>
+                <div @onclick="() => NavigateToModifyItem(item)">
+                    <span>@item.Name</span>
+                    <span>| rodzaj: @item.Genre |</span>
+                    <span> cena: @item.Price</span>
+                </div>
+                <button @onclick="() => RemoveItem(item)">remove item</button>
+            </li>
+        }
     }
-
 </ul>
 
 @code {
+    private List<ItemGroupDto> items = new();
 
-    protected Dictionary<ItemDto, int> items = new();
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        items = itemsService.GetItems();
+        items = await itemsService.RefreshItemsAsync();
+        itemsService.OnItemsChanged += HandleItemsChanged;
+    }
+
+    private void HandleItemsChanged()
+    {
+        items = itemsService.GetCachedItems();
+
+        InvokeAsync(StateHasChanged);
     }
 
     private void NavigateToAddItem()
@@ -41,10 +52,15 @@
     {
         itemsService.SetItemToModify(item);
         Navigation.NavigateTo("/edit-item");
-
     }
-    private void RemoveItem(KeyValuePair<ItemDto, int> item)
+
+    private async Task RemoveItem(ItemDto item)
     {
-        itemsService.RemoveItemAsync(item.Key, item.Value);
+        await itemsService.RemoveItemAsync(item);
+    }
+
+    public void Dispose()
+    {
+        itemsService.OnItemsChanged -= HandleItemsChanged;
     }
 }

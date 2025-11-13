@@ -1,5 +1,7 @@
 ﻿
 using Google.Cloud.Firestore;
+using Microsoft.Extensions.Options;
+using Shopper.Core.Components.Configs;
 
 namespace Shopper.Core.Components.Factory
 {
@@ -7,9 +9,20 @@ namespace Shopper.Core.Components.Factory
     {
         private readonly FirestoreDb _firestoreDb;
 
-        public FirestoreClientFactory(FirestoreDb firestoreDb)
+        public FirestoreClientFactory(IOptions<FirestoreOptions> options)
         {
-            _firestoreDb = firestoreDb;
+            var config = options.Value;
+            var content = "";
+            using(var stream = new FileStream(config.CredentialPath, FileMode.Open, FileAccess.Read))
+            {
+                content = new StreamReader(stream).ReadToEnd();
+            }
+
+            _firestoreDb = new FirestoreDbBuilder
+            {
+                ProjectId = config.ProjectId,
+                JsonCredentials = content,
+            }.Build();
         }
 
         public FirestoreDb GetClient()

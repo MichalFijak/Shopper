@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Shopper.Services.Components.Policies;
-using Shopper.Services.Components.Services;
 using Shopper.Services.Components.State;
 
 namespace Shopper.Services
@@ -12,9 +11,10 @@ namespace Shopper.Services
         {
 
             services.AddScoped<IItemsService, ItemsService>();
-            services.AddTransient<ISegregationPolicy, SegregationPolicy>();
-            services.AddTransient<IFirebaseSyncService, FirebaseSyncService>();
+            services.AddTransient<ICartPolicy, CartPolicy>();
+ 
             services.AddSingleton<ShoppingState>();
+
             return services;
         }
         //This can sit between App and Data, holding application logic like service classes,

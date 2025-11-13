@@ -3,52 +3,62 @@ using Shopper.Core.Components.Entity;
 using Shopper.Core.Components.Factory;
 using Shopper.Core.Components.Interfaces;
 using Shopper.Data.Components.Webhooks;
+using System.Diagnostics;
 
 
 namespace Shopper.Data.Infrastructure.Firebase.Listeners
 {
-    public class FirebaseEventSource(IFirestoreClientFactory firebaseClientFactory, IFirebaseWebhookHandler firebaseWebhookHandler) : IFirebaseEventSource
+    public class FirebaseEventSource : IFirebaseEventSource, IAsyncDisposable
     {
-        private readonly FirestoreDb firebaseClient = firebaseClientFactory.GetClient();
-        private readonly IFirebaseWebhookHandler firebaseWebhookHandler = firebaseWebhookHandler;
-        private readonly string collectionPath = "getThisPathFromEnviroments";
+        private readonly FirestoreDb firebaseClient;
+        private readonly string collectionPath = "ItemList";
+        private FirestoreChangeListener? listener;
+
+        public event Action<ItemModel, DocumentChange.Type>? ItemChanged;
+
+        public FirebaseEventSource(IFirestoreClientFactory firebaseClientFactory)
+        {
+            this.firebaseClient = firebaseClientFactory.GetClient();
+        }
+
         public async Task ListenToEventAsync(string webhookData)
         {
-            CollectionReference listRef = firebaseClient.Collection(collectionPath);
-
-            listRef.Listen(snapshot =>
+            try
             {
-                foreach (DocumentChange change in snapshot.Changes)
+                CollectionReference listRef = firebaseClient.Collection(collectionPath);
+                listener = listRef.Listen(async snapshot =>
                 {
-                    Console.WriteLine($"Change Type: {change.ChangeType}");
-                    Console.WriteLine($"Document ID: {change.Document.Id}");
-
-                    switch (change.ChangeType)
+                    try
                     {
-                        case DocumentChange.Type.Added:
-                            Console.WriteLine("Item about to being added.");
+                        foreach (DocumentChange change in snapshot.Changes)
+                        {
 
-                            firebaseWebhookHandler.CreateItemAsync(change.Document.Reference.Path, change.Document.ConvertTo<ItemModel>()).Wait();
-                            Console.WriteLine("Item added.");
-                            break;
 
-                        case DocumentChange.Type.Modified:
-                            Console.WriteLine("Item about to being modified.");
-
-                            firebaseWebhookHandler.UpdateItemAsync(change.Document.Reference.Path, change.Document.ConvertTo<ItemModel>()).Wait();
-                            Console.WriteLine("Item modified.");
-                            break;
-
-                        case DocumentChange.Type.Removed:
-                            Console.WriteLine("Item about to being removed.");
-                            firebaseWebhookHandler.DeleteItemAsync(change.Document.Reference.Path).Wait();
-                            Console.WriteLine("Item removed.");
-                            break;
+                            var item = change.Document.ConvertTo<ItemModel>();
+                            ItemChanged?.Invoke(item, change.ChangeType);
+                        }
                     }
-                }
-            });
-
-            await Task.CompletedTask;
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error processing Firestore changes: {ex}");
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error setting up Firestore listener: {ex}");
+                throw;
+            }
         }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (listener != null)
+            {
+                await listener.StopAsync();
+            }
+        }
+
+
     }
 }

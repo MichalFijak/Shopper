@@ -1,16 +1,17 @@
-﻿using Shopper.Core.Components.Entity;
+﻿using Google.Cloud.Firestore;
+using Shopper.Core.Components.Entity;
 
 namespace Shopper.Core.Components.Interfaces
 {
     public interface IFirebaseEventListener
     {
-        event Action<Dictionary<ItemModel, int>>? ItemsUpdated;
-        event Action<Dictionary<ItemModel, int>>? SubmittedItemsUpdated;
+        event Action<List<ItemModel>>? ItemsUpdated;
 
-        public void HandleItems(Dictionary<ItemModel, int> items);
+        event Action<ItemModel>? ItemsRemoved;
 
-        public void HandleSubmittedItems(Dictionary<ItemModel, int> submittedItems);
+        void HandleItems(List<ItemModel> items);
 
+        void HandleItemRemoved(ItemModel item);
 
     }
 }

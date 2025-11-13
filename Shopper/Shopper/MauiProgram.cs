@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Google.Cloud.Firestore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-
+using Shopper.Core.Components.Configs;
+using Shopper.Core.Components.Factory;
 using Shopper.Data;
 using Shopper.Services;
 
@@ -12,9 +14,6 @@ namespace Shopper
         {
             var builder = MauiApp.CreateBuilder();
 
-            var basePath = AppContext.BaseDirectory;
-            var configPath = Path.Combine(basePath, "appsettings.json");
-            builder.Configuration.AddJsonFile(configPath, optional: false, reloadOnChange: true);
 
             builder
                 .UseMauiApp<App>()
@@ -27,19 +26,16 @@ namespace Shopper
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             #region Services Registration
             builder.Services.AddServicesDependecies();
-            builder.Services.AddDataDependecies(builder.Configuration);
-
+            builder.Services.AddDataDependecies();
 
             var provider = builder.Services.BuildServiceProvider();
             #endregion
             return builder.Build();
         }
-    }
+    } 
 }
-
-

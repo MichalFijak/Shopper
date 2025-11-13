@@ -3,48 +3,83 @@ using Shopper.Core.Components.Interfaces;
 using Shopper.Services.Components.Dtos;
 using Shopper.Services.Components.Mappers;
 
+
+
 namespace Shopper.Services.Components.State
 {
     public class ShoppingState
     {
-
         private readonly IFirebaseEventListener firebaseEventListener;
 
-        private Dictionary<ItemDto, int> items { get; set; } = [];
-        private Dictionary<ItemDto, int> itemsInCart { get; set; } = [];
+        private List<ItemDto> items { get; set; } = new();
         private ItemDto itemToModify { get; set; } = new();
-        private string selectedList { get; set; } = "Actual_List";
+        private string selectedList { get; set; } = "MainList";
 
         public event Action? OnChange;
 
         public ShoppingState(IFirebaseEventListener firebaseEventListener)
         {
             this.firebaseEventListener = firebaseEventListener;
-
             firebaseEventListener.ItemsUpdated += HandleItemsUpdated;
-            firebaseEventListener.SubmittedItemsUpdated += HandleSubmittedItemsUpdated;
+            firebaseEventListener.ItemsRemoved += HandleItemRemoved;
         }
 
-        private void HandleItemsUpdated(Dictionary<ItemModel, int> itemsUpdated)
+        private void HandleItemsUpdated(List<ItemModel> itemsUpdated)
         {
-            items = itemsUpdated.ConvertToDto();
+
+            foreach (var updated in itemsUpdated)
+            {
+                var dto = updated.ConvertToDto();
+                var index = items.FindIndex(i => i.Name == dto.Name);
+
+                if (index >= 0)
+                {
+                    items[index] = dto; 
+                }
+                else
+                {
+                    items.Add(dto); 
+                }
+            }
+
             NotifyChange();
         }
 
-        private void HandleSubmittedItemsUpdated(Dictionary<ItemModel, int> submittedItems)
+        public IReadOnlyList<ItemDto> GetItems()
         {
-            itemsInCart = submittedItems.ConvertToDto();
-            NotifyChange();
+            return items;
         }
-
-        public IReadOnlyDictionary<ItemDto, int> GetItems() => items;
-        public IReadOnlyDictionary<ItemDto, int> GetItemsInCart() => itemsInCart;
+        public IReadOnlyList<ItemDto> GetItemsInCart() => items.Where(i => i.InCart).ToList();
         public ItemDto GetItemToModify() => itemToModify;
         public string GetSelectedList() => selectedList;
 
+        public void UpdateItems(List<ItemDto> updatedItems)
+        {
+            foreach (var updated in updatedItems)
+            {
+                var index = items.FindIndex(i => i.Name == updated.Name);
+                if (index >= 0)
+                {
+                    items[index] = updated;
+                }
+                else
+                {
+                    items.Add(updated);
+                }
+            }
+
+            NotifyChange();
+        }
+        private void HandleItemRemoved(ItemModel item)
+        {
+            var name = item.Name;
+            items.RemoveAll(i => i.Name == name);
+            NotifyChange();
+        }
         public void SetItemToModify(ItemDto item)
         {
             itemToModify = item;
+
             NotifyChange();
         }
 

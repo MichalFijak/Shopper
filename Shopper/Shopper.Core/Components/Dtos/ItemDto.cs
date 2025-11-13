@@ -7,7 +7,7 @@
         public string? Description { get; set; }
         public decimal? Price { get; set; }
 
-        public bool? InCart { get; set; } = false;
+        public bool InCart { get; set; } = false;
         public override bool Equals(object? obj)
         {
             if (obj is not ItemDto other) return false;
