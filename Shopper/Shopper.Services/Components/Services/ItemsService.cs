@@ -7,7 +7,6 @@ using Shopper.Services.Components.Dtos;
 using Shopper.Services.Components.Mappers;
 using Shopper.Services.Components.Policies;
 using Shopper.Services.Components.State;
-using System.Diagnostics;
 
 public class ItemsService : IItemsService
 {
@@ -139,7 +138,7 @@ public class ItemsService : IItemsService
     public List<ItemGroupDto> GetCachedItems()
     {
         var items = new List<ItemDto>(state.GetItems());
-        Debug.WriteLine($"GetCachedItems: {items.Count} items");
+
         return cartPolicy.PartitionByCartStatus(items);
 
     }

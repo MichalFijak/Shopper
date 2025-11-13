@@ -2,7 +2,7 @@
 using Shopper.Core.Components.Interfaces;
 using Shopper.Services.Components.Dtos;
 using Shopper.Services.Components.Mappers;
-using System.Diagnostics;
+
 
 
 namespace Shopper.Services.Components.State
@@ -13,7 +13,7 @@ namespace Shopper.Services.Components.State
 
         private List<ItemDto> items { get; set; } = new();
         private ItemDto itemToModify { get; set; } = new();
-        private string selectedList { get; set; } = "Actual_List";
+        private string selectedList { get; set; } = "MainList";
 
         public event Action? OnChange;
 
@@ -26,8 +26,7 @@ namespace Shopper.Services.Components.State
 
         private void HandleItemsUpdated(List<ItemModel> itemsUpdated)
         {
-            Debug.WriteLine($"HandleItemsUpdated called with {itemsUpdated.Count} items");
-            Debug.WriteLine($"Before update: {items.Count} items");
+
             foreach (var updated in itemsUpdated)
             {
                 var dto = updated.ConvertToDto();
@@ -42,7 +41,6 @@ namespace Shopper.Services.Components.State
                     items.Add(dto); 
                 }
             }
-            Debug.WriteLine($"After update: {items.Count} items");
 
             NotifyChange();
         }
@@ -75,7 +73,6 @@ namespace Shopper.Services.Components.State
         private void HandleItemRemoved(ItemModel item)
         {
             var name = item.Name;
-            Debug.WriteLine($"HandleItemRemoved called for item: {name}");
             items.RemoveAll(i => i.Name == name);
             NotifyChange();
         }
