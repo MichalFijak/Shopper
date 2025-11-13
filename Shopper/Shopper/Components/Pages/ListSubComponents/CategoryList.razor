@@ -1,0 +1,43 @@
+@using Shopper.Services.Components.Dtos
+
+
+<ul>
+    @if (Items != null && Items.Any())
+    {
+        @foreach (var item in Items)
+        {
+            <li>
+                <span>Nazwa: @item.Name</span>
+                <span> Rodzaj: @item.Genre</span>
+                @if (item.InCart)
+                {
+                    <button @onclick="() => MoveItemFromCart.InvokeAsync(item)">Move from cart</button>
+                }
+                else
+                {
+                    <button @onclick="() => SubmitItem.InvokeAsync(item)">Move to cart</button>
+                }
+                <button @onclick="() => RemoveItem.InvokeAsync(item)">Remove item</button>
+            </li>
+        }
+    }
+    else if (StaticItems != null && StaticItems.Any())
+    {
+        @foreach (var staticItem in StaticItems)
+        {
+            <li>@staticItem</li>
+        }
+    }
+</ul>
+
+@code {
+
+    [Parameter] public IEnumerable<ItemDto>? Items { get; set; }
+
+    [Parameter] public IEnumerable<string>? StaticItems { get; set; }
+
+
+    [Parameter] public EventCallback<ItemDto> SubmitItem { get; set; }
+    [Parameter] public EventCallback<ItemDto> MoveItemFromCart { get; set; }
+    [Parameter] public EventCallback<ItemDto> RemoveItem { get; set; }
+}

@@ -1,0 +1,47 @@
+@using Shopper.Core.Components.Dtos
+@using Shopper.Core.Components.Enums
+@using Shopper.Services.Components.Dtos
+@using Shopper.Services.Components.State
+
+@if (Enum.TryParse<ItemCategory>(SelectedList, out var category))
+{
+    switch (category)
+    {
+        case ItemCategory.MainList:
+            <CategoryList Items="Items.Where(g => !g.InCart).SelectMany(g => g.Items)"
+                          SubmitItem="SubmitItem"
+                          RemoveItem="RemoveItem" />
+            break;
+
+        case ItemCategory.Cart:
+            <CategoryList Items="Items.Where(g => g.InCart).SelectMany(g => g.Items)"
+                          MoveItemFromCart="MoveItemFromCart"
+                          RemoveItem="RemoveItem" />
+            break;
+
+        default:
+            @if (categoryData.ContainsKey(category))
+            {
+                <CategoryList StaticItems="categoryData[category]" />
+            }
+            break;
+    }
+}
+@code {
+    [Parameter] public string SelectedList { get; set; } = "MainList";
+    [Parameter] public List<ItemGroupDto> Items { get; set; } = new();
+
+    [Parameter] public EventCallback<ItemDto> SubmitItem { get; set; }
+    [Parameter] public EventCallback<ItemDto> MoveItemFromCart { get; set; }
+    [Parameter] public EventCallback<ItemDto> RemoveItem { get; set; }
+
+    private readonly Dictionary<ItemCategory, List<string>> categoryData = new()
+    {
+        { ItemCategory.Meat, new() { "Dog", "Cat", "Elephant" } },
+        { ItemCategory.Wheat, new() { "Ciasto na pizze", "Chleb", "Green" } },
+        { ItemCategory.Dairy, new() { "Mleko" } },
+        { ItemCategory.Fruit, new() { "Jablko", "Ananas", "Green" } },
+        { ItemCategory.Vegetables, new() { "Marchew" } },
+        { ItemCategory.Beverages, new() { "Kawa", "Herbata" } }
+    };
+}
