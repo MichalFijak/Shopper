@@ -22,7 +22,9 @@
         default:
             @if (categoryData.ContainsKey(category))
             {
-                <CategoryList StaticItems="categoryData[category]" />
+                <CategoryList Items="categoryData[category]"
+                              SubmitItem="SubmitItem"
+                              RemoveItem="RemoveItem" />
             }
             break;
     }
@@ -35,13 +37,23 @@
     [Parameter] public EventCallback<ItemDto> MoveItemFromCart { get; set; }
     [Parameter] public EventCallback<ItemDto> RemoveItem { get; set; }
 
-    private readonly Dictionary<ItemCategory, List<string>> categoryData = new()
+
+    private Dictionary<ItemCategory, List<ItemDto>> categoryData => Items
+        .SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>())
+        .Where(item => !string.IsNullOrWhiteSpace(item.Genre))
+        .Select(item => (Item: item, Parsed: TryParseCategory(item.Genre)))
+        .Where(t => t.Parsed.HasValue && t.Parsed.Value != ItemCategory.MainList && t.Parsed.Value != ItemCategory.Cart)
+        .GroupBy(t => t.Parsed.Value)
+        .ToDictionary(
+            g => g.Key,
+            g => g
+                .Select(t => t.Item)
+                .Where(i => i != null) // defensive
+                .Distinct()            // optional: requires ItemDto equality defined
+                .ToList()
+        );
+    private static ItemCategory? TryParseCategory(string genre)
     {
-        { ItemCategory.Meat, new() { "Dog", "Cat", "Elephant" } },
-        { ItemCategory.Wheat, new() { "Ciasto na pizze", "Chleb", "Green" } },
-        { ItemCategory.Dairy, new() { "Mleko" } },
-        { ItemCategory.Fruit, new() { "Jablko", "Ananas", "Green" } },
-        { ItemCategory.Vegetables, new() { "Marchew" } },
-        { ItemCategory.Beverages, new() { "Kawa", "Herbata" } }
-    };
+        return Enum.TryParse<ItemCategory>(genre, true, out var cat) ? cat : null;
+    }
 }
