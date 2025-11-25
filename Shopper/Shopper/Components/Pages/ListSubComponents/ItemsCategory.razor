@@ -1,0 +1,55 @@
+@using Shopper.Core.Components.Dtos
+@using Shopper.Core.Components.Enums
+@using Shopper.Services.Components.Dtos
+@using Shopper.Services.Components.State
+
+@if (Enum.TryParse<ItemCategory>(SelectedList, out var category))
+{
+    switch (category)
+    {
+        case ItemCategory.MainList:
+            <CategoryList Items="Items.Where(g => !g.InCart).SelectMany(g => g.Items)"
+                          SubmitItem="SubmitItem"
+                          RemoveItem="RemoveItem" />
+            break;
+
+        case ItemCategory.Cart:
+            <CategoryList Items="Items.Where(g => g.InCart).SelectMany(g => g.Items)"
+                          MoveItemFromCart="MoveItemFromCart"
+                          RemoveItem="RemoveItem" />
+            break;
+
+        default:
+            @if (categoryData.ContainsKey(category))
+            {
+                <CategoryList Items="categoryData[category]"
+                              SubmitItem="SubmitItem"
+                              RemoveItem="RemoveItem" />
+            }
+            break;
+    }
+}
+@code {
+    [Parameter] public string SelectedList { get; set; } = "MainList";
+    [Parameter] public List<ItemGroupDto> Items { get; set; } = new();
+
+    [Parameter] public EventCallback<ItemDto> SubmitItem { get; set; }
+    [Parameter] public EventCallback<ItemDto> MoveItemFromCart { get; set; }
+    [Parameter] public EventCallback<ItemDto> RemoveItem { get; set; }
+
+    // Map every item to a category; non-parseable or empty genres go to Unknown.
+    private Dictionary<ItemCategory, List<ItemDto>> categoryData => Items
+        .SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>())
+        .Select(item => (Item: item, Category: ParseOrUnknown(item?.Genre)))
+        .Where(t => t.Category != ItemCategory.MainList && t.Category != ItemCategory.Cart)
+        .GroupBy(t => t.Category)
+        .ToDictionary(g => g.Key, g => g.Select(t => t.Item).Where(i => i != null).Distinct().ToList());
+
+    private static ItemCategory ParseOrUnknown(string? genre)
+    {
+        if (string.IsNullOrWhiteSpace(genre))
+            return ItemCategory.Unknown;
+
+        return Enum.TryParse<ItemCategory>(genre, true, out var cat) ? cat : ItemCategory.Unknown;
+    }
+}

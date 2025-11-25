@@ -1,109 +1,31 @@
 ﻿@page "/shopping-list"
 
+@using Shopper.Components.Pages.ListSubComponents
 @using Shopper.Core.Components.Dtos
 @using Shopper.Core.Components.Enums
 @using Shopper.Services.Components.Dtos
 @using Shopper.Services.Components.State
 @inject IItemsService itemsService
+
 <h1>SelectedList</h1>
 <div>
     <h2>Choose a list:</h2>
-    <div>
-        <label><input type="radio" name="listSelection" value="MainList" checked="@IsSelected("MainList")" @onchange="OnSelectionChanged" /> Aktualna lista</label>
-        <label><input type="radio" name="listSelection" value="Dairy" checked="@IsSelected("Dairy")" @onchange="OnSelectionChanged" /> Nabial</label>
-        <label><input type="radio" name="listSelection" value="Meat" checked="@IsSelected("Meat")" @onchange="OnSelectionChanged" /> Mieso</label>
-        <label><input type="radio" name="listSelection" value="Wheat" checked="@IsSelected("Wheat")" @onchange="OnSelectionChanged" /> Zboze</label>
-        <label><input type="radio" name="listSelection" value="Fruit" checked="@IsSelected("Fruit")" @onchange="OnSelectionChanged" /> Owoce</label>
-        <label><input type="radio" name="listSelection" value="Vegetables" checked="@IsSelected("Vegetables")" @onchange="OnSelectionChanged" /> Warzywa</label>
-        <label><input type="radio" name="listSelection" value="Beverages" checked="@IsSelected("Beverages")" @onchange="OnSelectionChanged" /> Napoje</label>
-        <label><input type="radio" name="listSelection" value="Koszyk" checked="@IsSelected("Cart")" @onchange="OnSelectionChanged" /> Koszyk</label>
-    </div>
+<div>
+    @foreach (var category in categories)
+    {
+        <label>
+            <input type="radio"
+                   name="listSelection"
+                   value="@category.Value"
+                   checked="@IsSelected(category.Value)"
+                   @onchange="OnSelectionChanged" />
+            @category.Label
+        </label>
+    }
+</div>
 </div>
 
-
-@if (Enum.TryParse<ItemCategory>(selectedList, out var category))
-{
-    switch (category)
-    {
-        case ItemCategory.MainList:
-            <ul>
-                @foreach (var group in items.Where(g => g.InCart == false))
-                {
-                    @foreach (var item in group.Items)
-                    {
-                        <li>
-                            <span>Nazwa: @item.Name</span>
-                            <span> Rodzaj: @item.Genre</span>
-                            <button @onclick="() => SubmitItem(item)">Move to cart</button>
-                            <button @onclick="() => RemoveItem(item)">Remove item</button>
-                        </li>
-                    }
-                }
-            </ul>
-            break;
-
-        case ItemCategory.Meat:
-            <ul>
-                <li>Dog</li>
-                <li>Cat</li>
-                <li>Elephant</li>
-            </ul>
-            break;
-
-        case ItemCategory.Wheat:
-            <ul>
-                <li>Ciasto na pizze</li>
-                <li>CHleb</li>
-                <li>Green</li>
-            </ul>
-            break;
-
-        case ItemCategory.Dairy:
-            <ul>
-                <li>Mleko</li>
-            </ul>
-            break;
-
-        case ItemCategory.Fruit:
-            <ul>
-                <li>Jablko</li>
-                <li>Ananas</li>
-                <li>Green</li>
-            </ul>
-            break;
-
-        case ItemCategory.Vegetables:
-            <ul>
-                <li>Marchew</li>
-            </ul>
-            break;
-
-        case ItemCategory.Beverages:
-            <ul>
-                <li>Kawa</li>
-                <li>Herbata</li>
-            </ul>
-            break;
-
-        case ItemCategory.Cart:
-            <ul>
-                @foreach (var group in items.Where(g => g.InCart == true))
-                {
-                    @foreach (var kvp in group.Items)
-                    {
-                        <li>
-                            <span>Nazwa: @kvp.Name</span>
-                            <span> Rodzaj: @kvp.Genre</span>
-                            <button @onclick="() => MoveItemFromCart(kvp)">Move from cart</button>
-                            <button @onclick="() => RemoveItem(kvp)">Remove item</button>
-                        </li>
-                    }
-                }
-            </ul>
-            break;
-    }
-}
-
+<ItemsCategory SelectedList="@selectedList" Items="@items" SubmitItem="@SubmitItem" MoveItemFromCart="@MoveItemFromCart" RemoveItem="@RemoveItem" />
 
 @code {
     protected string selectedList = "MainList";
@@ -149,4 +71,18 @@
         selectedList = e.Value?.ToString() ?? "MainList";
         itemsService.SetSelectedList(selectedList);
     }
+
+    private readonly List<(string Value, string Label)> categories = new()
+    {
+        ("MainList", "Aktualna lista"),
+        ("Dairy", "Nabial"),
+        ("Meat", "Mieso"),
+        ("Wheat", "Zboze"),
+        ("Fruit", "Owoce"),
+        ("Vegetables", "Warzywa"),
+        ("Beverages", "Napoje"),
+        ("Unknown", "Reszta"),
+        ("Cart", "Koszyk")
+    };
+
 }

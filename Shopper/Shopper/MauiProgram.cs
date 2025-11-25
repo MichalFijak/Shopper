@@ -1,8 +1,6 @@
-﻿using Google.Cloud.Firestore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shopper.Core.Components.Configs;
-using Shopper.Core.Components.Factory;
 using Shopper.Data;
 using Shopper.Services;
 
@@ -13,7 +11,6 @@ namespace Shopper
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
-
 
             builder
                 .UseMauiApp<App>()
@@ -31,11 +28,33 @@ namespace Shopper
 
             #region Services Registration
             builder.Services.AddServicesDependecies();
-            builder.Services.AddDataDependecies();
 
-            var provider = builder.Services.BuildServiceProvider();
+            using var stream = FileSystem.OpenAppPackageFileAsync("appsettings.json").Result;
+            var config = new ConfigurationBuilder()
+                            .AddJsonStream(stream)
+                            .Build();
+
+            var projectId = config["Firestore:ProjectId"];
+            var credentialFile = config["Firestore:CredentialPath"];
+
+            using var credStream = FileSystem.OpenAppPackageFileAsync(credentialFile).Result;
+            var localPath = Path.Combine(FileSystem.CacheDirectory, credentialFile);
+            using (var file = File.Create(localPath))
+            {
+                credStream.CopyTo(file);
+            }
+
+            var firestoreOptions = new FirestoreOptions
+            {
+                ProjectId = projectId,
+                CredentialPath = localPath
+            };
+
+            builder.Services.AddDataDependencies(firestoreOptions);
+
             #endregion
+
             return builder.Build();
         }
-    } 
+    }
 }

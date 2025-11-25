@@ -10,6 +10,7 @@ namespace Shopper.Core.Components.Enums
         Fruit,
         Vegetables,
         Beverages,
+        Unknown,
         Cart
     }
 }

@@ -58,18 +58,32 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
-        <PackageReference Include="Google.Cloud.Firestore" Version="3.10.0" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
-    </ItemGroup>
+		<MauiAsset Include="Resources\Raw\credentials.json" LogicalName="credentials.json" />    </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Shopper.Core\Shopper.Core.csproj" />
-      <ProjectReference Include="..\Shopper.Data\Shopper.Data.csproj" />
-      <ProjectReference Include="..\Shopper.Services\Shopper.Services.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<MauiAsset Include="Resources\Raw\appsettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+		<PackageReference Include="Google.Cloud.Firestore" Version="3.10.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Shopper.Core\Shopper.Core.csproj" />
+		<ProjectReference Include="..\Shopper.Data\Shopper.Data.csproj" />
+		<ProjectReference Include="..\Shopper.Services\Shopper.Services.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Data\" />
+	</ItemGroup>
+
+
+
 
 </Project>
