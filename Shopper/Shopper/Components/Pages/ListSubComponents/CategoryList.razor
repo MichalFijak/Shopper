@@ -21,21 +21,11 @@
             </li>
         }
     }
-    else if (StaticItems != null && StaticItems.Any())
-    {
-        @foreach (var staticItem in StaticItems)
-        {
-            <li>@staticItem</li>
-        }
-    }
 </ul>
 
 @code {
 
     [Parameter] public IEnumerable<ItemDto>? Items { get; set; }
-
-    [Parameter] public IEnumerable<string>? StaticItems { get; set; }
-
 
     [Parameter] public EventCallback<ItemDto> SubmitItem { get; set; }
     [Parameter] public EventCallback<ItemDto> MoveItemFromCart { get; set; }

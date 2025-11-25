@@ -1,6 +1,4 @@
-﻿
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shopper.Core.Components.Configs;
 using Shopper.Core.Components.Factory;
 using Shopper.Core.Components.Interfaces;
@@ -12,32 +10,18 @@ namespace Shopper.Data
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddDataDependecies(this IServiceCollection services)
+        public static IServiceCollection AddDataDependencies(this IServiceCollection services, FirestoreOptions firestoreOptions)
         {
-
-            var basePath = AppContext.BaseDirectory;
-
-            var config = new ConfigurationBuilder()
-                                .SetBasePath(basePath)
-                                .AddJsonFile("appsettings.json", optional: true)
-                                .Build();
-
-
-            var projectId = config["Firestore:ProjectId"];
-            var credentialPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, config["Firestore:CredentialPath"]));
-
-            if (!File.Exists(credentialPath))
-                throw new FileNotFoundException($"Firestore credentials not found at: {credentialPath}");
-
-
+            // Rejestrujemy opcje przekazane z projektu MAUI
             services.Configure<FirestoreOptions>(options =>
             {
-                options.ProjectId = projectId;
-                options.CredentialPath = credentialPath;
+                options.ProjectId = firestoreOptions.ProjectId;
+                options.CredentialPath = firestoreOptions.CredentialPath;
             });
-            services.AddSingleton<IFirestoreClientFactory, FirestoreClientFactory>(options =>
+
+            services.AddSingleton<IFirestoreClientFactory, FirestoreClientFactory>(sp =>
             {
-                return new FirestoreClientFactory(options.GetRequiredService<Microsoft.Extensions.Options.IOptions<FirestoreOptions>>());
+                return new FirestoreClientFactory(sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<FirestoreOptions>>());
             });
 
             services.AddSingleton<IFirebaseEventListener, FirebaseEventListener>();

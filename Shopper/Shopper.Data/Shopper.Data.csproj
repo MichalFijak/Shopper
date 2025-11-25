@@ -20,4 +20,5 @@
     <ProjectReference Include="..\Shopper.Core\Shopper.Core.csproj" />
   </ItemGroup>
 
+
 </Project>
