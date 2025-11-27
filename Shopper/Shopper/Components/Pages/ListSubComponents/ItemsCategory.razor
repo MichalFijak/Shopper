@@ -5,30 +5,153 @@
 
 @if (Enum.TryParse<ItemCategory>(SelectedList, out var category))
 {
-    switch (category)
-    {
-        case ItemCategory.MainList:
-            <CategoryList Items="Items.Where(g => !g.InCart).SelectMany(g => g.Items)"
-                          SubmitItem="SubmitItem"
-                          RemoveItem="RemoveItem" />
-            break;
-
-        case ItemCategory.Cart:
-            <CategoryList Items="Items.Where(g => g.InCart).SelectMany(g => g.Items)"
-                          MoveItemFromCart="MoveItemFromCart"
-                          RemoveItem="RemoveItem" />
-            break;
-
-        default:
-            @if (categoryData.ContainsKey(category))
-            {
-                <CategoryList Items="categoryData[category]"
+    <div class="space-category-container">
+        @switch (category)
+        {
+            case ItemCategory.MainList:
+                <CategoryList Items="Items.Where(g => !g.InCart).SelectMany(g => g.Items)"
                               SubmitItem="SubmitItem"
                               RemoveItem="RemoveItem" />
-            }
-            break;
-    }
+                break;
+
+            case ItemCategory.Cart:
+                <CategoryList Items="Items.Where(g => g.InCart).SelectMany(g => g.Items)"
+                              MoveItemFromCart="MoveItemFromCart"
+                              RemoveItem="RemoveItem" />
+                break;
+
+            default:
+                @if (categoryData.ContainsKey(category))
+                {
+                    <CategoryList Items="categoryData[category]"
+                                  SubmitItem="SubmitItem"
+                                  RemoveItem="RemoveItem" />
+                }
+                break;
+        }
+    </div>
 }
+
+<style>
+    /* Container styling */
+    .space-category-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        border-radius: 16px;
+        background: radial-gradient(circle at top left, rgba(20,20,40,0.95), rgba(5,5,15,0.95));
+        border: 1px solid rgba(120,180,255,0.3);
+        box-shadow: 0 0 25px rgba(120,180,255,0.25);
+        transition: all 0.4s ease;
+    }
+
+        .space-category-container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 40px rgba(120,180,255,0.5);
+        }
+
+    /* Title styling */
+    .category-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #e0e6ff;
+        margin-bottom: 1rem;
+        text-align: center;
+        border-bottom: 2px solid rgba(120,180,255,0.3);
+        padding-bottom: 0.5rem;
+        letter-spacing: 1px;
+    }
+
+    /* Item row styling */
+    .category-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.9rem 1.2rem;
+        margin-bottom: 0.8rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(30,30,60,0.9), rgba(10,10,20,0.95));
+        border: 1px solid rgba(120,180,255,0.25);
+        box-shadow: 0 0 15px rgba(120,180,255,0.2);
+        transition: all 0.3s ease;
+    }
+
+        .category-list-item:hover {
+            background: linear-gradient(135deg, rgba(40,40,80,0.95), rgba(15,15,25,0.95));
+            box-shadow: 0 0 25px rgba(120,180,255,0.4);
+        }
+
+    /* Item text */
+    .item-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #e0e6ff;
+    }
+
+    .item-actions {
+        display: flex;
+        gap: 0.6rem;
+    }
+
+    /* Futuristic buttons */
+    .category-btn {
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #fff;
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(6px);
+        box-shadow: 0 0 12px rgba(120,180,255,0.3);
+    }
+
+        /* Hover glow */
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(120,180,255,0.6);
+        }
+
+        /* Variants with cosmic colors */
+        .category-btn.submit {
+            background: linear-gradient(135deg, #3a9bdc, #1e3a8a); /* blue nebula */
+            box-shadow: 0 0 15px rgba(80,160,255,0.7);
+        }
+
+            .category-btn.submit:hover {
+                box-shadow: 0 0 25px rgba(80,160,255,1);
+            }
+
+        .category-btn.move {
+            background: linear-gradient(135deg, #b37aff, #5a2d91); /* purple galaxy */
+            box-shadow: 0 0 15px rgba(180,120,255,0.7);
+        }
+
+            .category-btn.move:hover {
+                box-shadow: 0 0 25px rgba(180,120,255,1);
+            }
+
+        .category-btn.remove {
+            background: linear-gradient(135deg, #ff4d6d, #7a1c2f); /* red supernova */
+            box-shadow: 0 0 15px rgba(255,80,120,0.7);
+        }
+
+            .category-btn.remove:hover {
+                box-shadow: 0 0 25px rgba(255,80,120,1);
+            }
+
+        /* Disabled state */
+        .category-btn:disabled {
+            background: rgba(80,80,120,0.4);
+            box-shadow: none;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+</style>
+
 @code {
     [Parameter] public string SelectedList { get; set; } = "MainList";
     [Parameter] public List<ItemGroupDto> Items { get; set; } = new();
@@ -37,7 +160,6 @@
     [Parameter] public EventCallback<ItemDto> MoveItemFromCart { get; set; }
     [Parameter] public EventCallback<ItemDto> RemoveItem { get; set; }
 
-    // Map every item to a category; non-parseable or empty genres go to Unknown.
     private Dictionary<ItemCategory, List<ItemDto>> categoryData => Items
         .SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>())
         .Select(item => (Item: item, Category: ParseOrUnknown(item?.Genre)))

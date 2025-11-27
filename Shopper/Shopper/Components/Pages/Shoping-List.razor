@@ -7,69 +7,214 @@
 @using Shopper.Services.Components.State
 @inject IItemsService itemsService
 
-<h1>SelectedList</h1>
-<div>
-    <h2>Choose a list:</h2>
-<div>
-    @foreach (var category in categories)
-    {
-        <label>
-            <input type="radio"
-                   name="listSelection"
-                   value="@category.Value"
-                   checked="@IsSelected(category.Value)"
-                   @onchange="OnSelectionChanged" />
-            @category.Label
-        </label>
-    }
-</div>
+<div class="carousel-container">
+    <h2 class="section-title">Wybierz liste:</h2>
+    <div class="carousel" @onpointerdown="HandleSwipeStart" @onpointerup="HandleSwipeEnd">
+        @foreach (var category in categories)
+        {
+            <label id="card-@category.Value" class="carousel-card @(IsSelected(category.Value) ? "selected" : "")">
+                <input type="radio"
+                       name="listSelection"
+                       value="@category.Value"
+                       checked="@IsSelected(category.Value)"
+                       @onchange="OnSelectionChanged" />
+                <span class="list-label">@category.Label</span>
+            </label>
+        }
+    </div>
 </div>
 
-<ItemsCategory SelectedList="@selectedList" Items="@items" SubmitItem="@SubmitItem" MoveItemFromCart="@MoveItemFromCart" RemoveItem="@RemoveItem" />
+<ItemsCategory @key="selectedList"
+               SelectedList="@selectedList"
+               Items="@items"
+               SubmitItem="@SubmitItem"
+               MoveItemFromCart="@MoveItemFromCart"
+               RemoveItem="@RemoveItem" />
+
+<style>
+    /* Page title */
+    .page-title {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 2rem;
+        color: #e0e6ff;
+        text-align: center;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 12px rgba(120,180,255,0.6);
+    }
+
+    /* Carousel container */
+    .carousel-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 1rem;
+        border-radius: 16px;
+        background: radial-gradient(circle at top left, rgba(20,20,40,0.95), rgba(5,5,15,0.95));
+        border: 1px solid rgba(120,180,255,0.3);
+        box-shadow: 0 0 25px rgba(120,180,255,0.25);
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #e0e6ff;
+        text-align: center;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid rgba(120,180,255,0.3);
+        padding-bottom: 0.5rem;
+        letter-spacing: 1px;
+    }
+
+    /* Carousel styling */
+    .carousel {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .carousel-card {
+        flex: 0 0 180px;
+        scroll-snap-align: center;
+        border-radius: 12px;
+        border: 1px solid rgba(120,180,255,0.3);
+        background: linear-gradient(135deg, rgba(30,30,60,0.9), rgba(10,10,20,0.95));
+        color: #e0e6ff;
+        transition: all 0.3s ease;
+        padding: 0.75rem;
+        text-align: center;
+        box-shadow: 0 0 12px rgba(120,180,255,0.25);
+        cursor: pointer;
+    }
+
+        .carousel-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 20px rgba(120,180,255,0.5);
+        }
+
+        .carousel-card.selected {
+            background: linear-gradient(135deg, #3a9bdc, #1e3a8a);
+            border-color: rgba(80,160,255,0.7);
+            box-shadow: 0 0 25px rgba(80,160,255,0.9);
+            color: #fff;
+        }
+
+    .list-label {
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    /* Debug panel (optional) */
+    .debug-panel {
+        margin: 1rem;
+        padding: 0.5rem;
+        border: 1px dashed #ccc;
+        background: rgba(255,255,255,0.05);
+        color: #aaa;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+</style>
 
 @code {
+    [Inject] private IJSRuntime JS { get; set; }
+
     protected string selectedList = "MainList";
     protected List<ItemGroupDto> items = new();
+    private int selectedIndex = 0;
+    private double startX;
+
+    // helper to flatten items safely
+    private IEnumerable<ItemDto> AllItems => items.SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>());
 
     protected override async Task OnInitializedAsync()
     {
         selectedList = itemsService.GetSelectedList();
+
+        selectedIndex = categories.FindIndex(c => c.Value == selectedList);
+        if (selectedIndex < 0) selectedIndex = 0;
+
         itemsService.OnItemsChanged += HandleItemsChanged;
         items = await itemsService.RefreshItemsAsync();
+
+        // ensure UI updates after initial load
+        await InvokeAsync(StateHasChanged);
     }
 
     private void HandleItemsChanged()
     {
         items = itemsService.GetCachedItems();
+        // force UI refresh from non-UI threads safely
         InvokeAsync(StateHasChanged);
     }
 
-    private async Task SubmitItem(ItemDto item)
-    {
-        await itemsService.MoveToCartAsync(item);
-    }
+    private async Task SubmitItem(ItemDto item) => await itemsService.MoveToCartAsync(item);
+    private async Task RemoveItem(ItemDto item) => await itemsService.RemoveItemAsync(item);
+    private async Task MoveItemFromCart(ItemDto item) => await itemsService.MoveToCartAsync(item);
 
-    private async Task RemoveItem(ItemDto item)
-    {
-        await itemsService.RemoveItemAsync(item);
-    }
-
-    private async Task MoveItemFromCart(ItemDto item)
-    {
-        await itemsService.MoveToCartAsync(item);
-    }
-
-    public void Dispose()
-    {
-        itemsService.OnItemsChanged -= HandleItemsChanged;
-    }
+    public void Dispose() => itemsService.OnItemsChanged -= HandleItemsChanged;
 
     private bool IsSelected(string value) => selectedList == value;
 
-    private void OnSelectionChanged(ChangeEventArgs e)
+    private async Task OnSelectionChanged(ChangeEventArgs e)
     {
         selectedList = e.Value?.ToString() ?? "MainList";
+        selectedIndex = categories.FindIndex(c => c.Value == selectedList);
         itemsService.SetSelectedList(selectedList);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleSwipeStart(PointerEventArgs e) => startX = e.ClientX;
+
+    private void HandleSwipeEnd(PointerEventArgs e)
+    {
+        var deltaX = e.ClientX - startX;
+        if (deltaX > 50) SelectPreviousCategory();
+        else if (deltaX < -50) SelectNextCategory();
+    }
+
+    private async Task ScrollToSelectedAsync() => await JS.InvokeVoidAsync("cardScrollIntoView", $"card-{selectedList}");
+
+    private async void SelectNextCategory()
+    {
+        if (selectedIndex < categories.Count - 1)
+        {
+            selectedIndex++;
+            selectedList = categories[selectedIndex].Value;
+            itemsService.SetSelectedList(selectedList);
+            await ScrollToSelectedAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async void SelectPreviousCategory()
+    {
+        if (selectedIndex > 0)
+        {
+            selectedIndex--;
+            selectedList = categories[selectedIndex].Value;
+            itemsService.SetSelectedList(selectedList);
+            await ScrollToSelectedAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private IEnumerable<ItemDto> GetCurrentCategoryItems()
+    {
+        if (Enum.TryParse<ItemCategory>(selectedList, out var cat))
+        {
+            return cat switch
+            {
+                ItemCategory.MainList => items.Where(g => !g.InCart).SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>()),
+                ItemCategory.Cart => items.Where(g => g.InCart).SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>()),
+                _ => items.SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>())
+                          .Where(i => Enum.TryParse<ItemCategory>(i.Genre, true, out var parsed) ? parsed == cat : cat == ItemCategory.Unknown)
+            };
+        }
+
+        return Enumerable.Empty<ItemDto>();
     }
 
     private readonly List<(string Value, string Label)> categories = new()
@@ -84,5 +229,4 @@
         ("Unknown", "Reszta"),
         ("Cart", "Koszyk")
     };
-
 }

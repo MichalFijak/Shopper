@@ -1,27 +1,169 @@
 @using Shopper.Services.Components.Dtos
 
-
-<ul>
+<ul class="space-list">
     @if (Items != null && Items.Any())
     {
         @foreach (var item in Items)
         {
-            <li>
-                <span>Nazwa: @item.Name</span>
-                <span> Rodzaj: @item.Genre</span>
-                @if (item.InCart)
-                {
-                    <button @onclick="() => MoveItemFromCart.InvokeAsync(item)">Move from cart</button>
-                }
-                else
-                {
-                    <button @onclick="() => SubmitItem.InvokeAsync(item)">Move to cart</button>
-                }
-                <button @onclick="() => RemoveItem.InvokeAsync(item)">Remove item</button>
+            <li class="space-list-item @(item.InCart ? "in-cart" : "")">
+                <div class="item-info">
+                    <span class="item-name">@item.Name</span>
+                    <span class="item-genre">(@item.Genre)</span>
+                </div>
+
+                <div class="item-actions">
+                    @if (item.InCart)
+                    {
+                        <button class="space-btn move" @onclick="() => MoveItemFromCart.InvokeAsync(item)">
+                            Move from cart
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="space-btn submit" @onclick="() => SubmitItem.InvokeAsync(item)">
+                            Move to cart
+                        </button>
+                    }
+
+                    <button class="space-btn remove" @onclick="() => RemoveItem.InvokeAsync(item)">
+                        Remove item
+                    </button>
+                </div>
             </li>
         }
     }
+    else
+    {
+        <li class="empty-message">No items available</li>
+    }
 </ul>
+
+
+
+<style>
+    /* Cosmic background for the list */
+    .space-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    /* Each item card looks like a glowing panel */
+    .space-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 14px;
+        background: radial-gradient(circle at top left, rgba(30,30,60,0.9), rgba(10,10,20,0.95));
+        border: 1px solid rgba(120,180,255,0.3);
+        box-shadow: 0 0 20px rgba(120,180,255,0.25);
+        transition: all 0.3s ease;
+    }
+
+        .space-list-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(120,180,255,0.5);
+        }
+
+        /* Cart items glow differently */
+        .space-list-item.in-cart {
+            border-color: rgba(255,180,80,0.5);
+            box-shadow: 0 0 25px rgba(255,180,80,0.4);
+        }
+
+    /* Item info */
+    .item-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .item-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #e0e6ff; /* starlight blue */
+    }
+
+    .item-genre {
+        font-size: 0.85rem;
+        color: #9aa0c2;
+    }
+
+    /* Actions area */
+    .item-actions {
+        display: flex;
+        gap: 0.6rem;
+    }
+
+    /* Futuristic space buttons */
+    .space-btn {
+        position: relative;
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: #fff;
+        background: linear-gradient(135deg, rgba(40,40,80,0.9), rgba(20,20,40,0.9));
+        transition: all 0.3s ease;
+        box-shadow: 0 0 12px rgba(120,180,255,0.4);
+    }
+
+        /* Hover glow */
+        .space-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(120,180,255,0.8);
+        }
+
+        /* Variants with cosmic colors */
+        .space-btn.submit {
+            background: linear-gradient(135deg, #3a9bdc, #1e3a8a); /* blue nebula */
+            box-shadow: 0 0 15px rgba(80,160,255,0.7);
+        }
+
+            .space-btn.submit:hover {
+                box-shadow: 0 0 25px rgba(80,160,255,1);
+            }
+
+        .space-btn.move {
+            background: linear-gradient(135deg, #b37aff, #5a2d91); /* purple galaxy */
+            box-shadow: 0 0 15px rgba(180,120,255,0.7);
+        }
+
+            .space-btn.move:hover {
+                box-shadow: 0 0 25px rgba(180,120,255,1);
+            }
+
+        .space-btn.remove {
+            background: linear-gradient(135deg, #ff4d6d, #7a1c2f); /* red supernova */
+            box-shadow: 0 0 15px rgba(255,80,120,0.7);
+        }
+
+            .space-btn.remove:hover {
+                box-shadow: 0 0 25px rgba(255,80,120,1);
+            }
+
+        /* Disabled state */
+        .space-btn:disabled {
+            background: rgba(80,80,120,0.4);
+            box-shadow: none;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+    /* Empty message */
+    .empty-message {
+        text-align: center;
+        color: #9aa0c2;
+        font-style: italic;
+        padding: 1rem;
+    }
+
+</style>
 
 @code {
 
