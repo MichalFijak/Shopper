@@ -1,0 +1,109 @@
+﻿/* Theme variables - single source of truth */
+:root {
+    /* Background & text */
+    --bg-dark: #121417;
+    --bg-dark-rgb: 18,20,23;
+
+    /* Panel colors (flat) */
+    --panel-color: #161823; /* dark panel */
+    --panel-selected-color: #1f6fa8; /* selected card color (blue) */
+
+    --text: #c5c6c7;
+    --muted: #9aa0c2;
+
+    /* Accent / neon */
+    --neon: #66fcf1;
+    --neon-rgb: 102,252,241;
+    --teal: #45a29e;
+
+    /* Primary / starlight */
+    --primary: #3498db;
+    --primary-dark: #1e3a8a;
+    --submit-start: #3a9bdc;
+    --submit-end: #1e3a8a;
+    --move-start: #b37aff;
+    --move-end: #5a2d91;
+    --remove-start: #ff4d6d;
+    --remove-end: #7a1c2f;
+
+    --accent: #78b4ff;
+    --accent-rgb: 120,180,255;
+    --starlight: #e0e6ff;
+
+    /* Buttons - smaller sizes (half of previous) */
+    --btn-padding-vertical: 6px; /* was 12px */
+    --btn-padding-horizontal: 9px; /* was 18px */
+    --btn-font-size: 0.45rem; /* reduced size */
+    --btn-font-size-md: 0.5rem; /* fallback for component buttons */
+
+    /* Buttons text color */
+    --btn-text: #0b0c10;
+
+    /* Panels */
+    --panel-bg: #fffbe6;
+}
+
+/* Remove gradient helpers: use flat panels to avoid banding */
+.smooth-gradient {
+    background-color: var(--panel-color);
+    background-image: none;
+    background-blend-mode: normal;
+}
+
+.smooth-gradient-accent {
+    background-color: var(--panel-selected-color);
+    background-image: none;
+    background-blend-mode: normal;
+}
+
+/* 🎨 Kolory */
+body {
+    background: var(--bg-dark); /* prostsze tło od razu dla mobile */
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+/* 🔠 Nagłówki */
+h1, h2, h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon);
+    text-align: center;
+    text-shadow: 0 0 8px var(--teal);
+    margin: 15px 10px;
+}
+
+/* 📱 Rozmiary dopasowane do telefonu */
+h1 { font-size: 1.4rem; }
+h2 { font-size: 1.2rem; }
+h3 { font-size: 1rem; }
+
+/* 🔘 Przyciski w stylu futurystycznym - globally smaller and no heavy shadows */
+button {
+    background: var(--neon);
+    color: var(--btn-text);
+    border: none;
+    border-radius: 6px;
+    padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: bold;
+    font-size: var(--btn-font-size);
+    text-transform: uppercase;
+    box-shadow: none; /* removed heavy shadows */
+    transition: all 0.18s ease;
+}
+
+button:active { transform: scale(0.95); }
+button:hover {
+    background: var(--teal);
+    /* no large hover shadow */
+}
+
+/* Utility classes */
+.hidden { display: none !important; }
+.center { display: flex; justify-content: center; align-items: center; }
+
+/* Global small components */
+.debug-panel { margin: 1rem; padding: .5rem; border: 1px dashed rgba(var(--accent-rgb), 0.15); background: var(--panel-bg); font-size: .9rem; color: var(--text); }

@@ -23,6 +23,7 @@ namespace Shopper
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
+
             builder.Logging.AddDebug();
 #endif
 

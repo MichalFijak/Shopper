@@ -36,10 +36,10 @@
     .page-title {
         font-family: 'Segoe UI', sans-serif;
         font-size: 2rem;
-        color: #e0e6ff;
+        color: var(--starlight);
         text-align: center;
         margin-bottom: 1rem;
-        text-shadow: 0 0 12px rgba(120,180,255,0.6);
+        text-shadow: none;
     }
 
     /* Carousel container */
@@ -48,18 +48,17 @@
         margin: 2rem auto;
         padding: 1rem;
         border-radius: 16px;
-        background: radial-gradient(circle at top left, rgba(20,20,40,0.95), rgba(5,5,15,0.95));
-        border: 1px solid rgba(120,180,255,0.3);
-        box-shadow: 0 0 25px rgba(120,180,255,0.25);
+        background-color: var(--panel-color);
+        border: 1px solid rgba(var(--accent-rgb),0.12);
     }
 
     .section-title {
         font-size: 1.4rem;
         font-weight: 600;
-        color: #e0e6ff;
+        color: var(--starlight);
         text-align: center;
         margin-bottom: 1rem;
-        border-bottom: 2px solid rgba(120,180,255,0.3);
+        border-bottom: 2px solid rgba(var(--accent-rgb),0.08);
         padding-bottom: 0.5rem;
         letter-spacing: 1px;
     }
@@ -77,30 +76,27 @@
         flex: 0 0 180px;
         scroll-snap-align: center;
         border-radius: 12px;
-        border: 1px solid rgba(120,180,255,0.3);
-        background: linear-gradient(135deg, rgba(30,30,60,0.9), rgba(10,10,20,0.95));
-        color: #e0e6ff;
-        transition: all 0.3s ease;
-        padding: 0.75rem;
+        border: 1px solid rgba(var(--accent-rgb),0.08);
+        background-color: var(--panel-color);
+        color: var(--starlight);
+        transition: all 0.18s ease;
+        padding: 0.5rem;
         text-align: center;
-        box-shadow: 0 0 12px rgba(120,180,255,0.25);
         cursor: pointer;
     }
 
         .carousel-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 0 20px rgba(120,180,255,0.5);
+            transform: translateY(-2px);
         }
 
         .carousel-card.selected {
-            background: linear-gradient(135deg, #3a9bdc, #1e3a8a);
-            border-color: rgba(80,160,255,0.7);
-            box-shadow: 0 0 25px rgba(80,160,255,0.9);
+            background-color: var(--panel-selected-color);
+            border-color: rgba(var(--accent-rgb),0.18);
             color: #fff;
         }
 
     .list-label {
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 600;
         letter-spacing: 0.5px;
     }
@@ -109,9 +105,9 @@
     .debug-panel {
         margin: 1rem;
         padding: 0.5rem;
-        border: 1px dashed #ccc;
-        background: rgba(255,255,255,0.05);
-        color: #aaa;
+        border: 1px dashed rgba(var(--accent-rgb),0.06);
+        background: transparent;
+        color: var(--muted);
         font-size: 0.9rem;
         border-radius: 8px;
     }

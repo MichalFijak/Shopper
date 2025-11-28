@@ -5,7 +5,7 @@
     {
         @foreach (var item in Items)
         {
-            <li class="space-list-item @(item.InCart ? "in-cart" : "")">
+            <li class="space-list-item @(item.InCart ? "in-cart" : "")" style="background-color: var(--panel-color);">
                 <div class="item-info">
                     <span class="item-name">@item.Name</span>
                     <span class="item-genre">(@item.Genre)</span>
@@ -14,18 +14,18 @@
                 <div class="item-actions">
                     @if (item.InCart)
                     {
-                        <button class="space-btn move" @onclick="() => MoveItemFromCart.InvokeAsync(item)">
+                        <button class="space-btn move" style="padding: var(--btn-padding-vertical) var(--btn-padding-horizontal); font-size: var(--btn-font-size-md);" @onclick="() => MoveItemFromCart.InvokeAsync(item)">
                             Move from cart
                         </button>
                     }
                     else
                     {
-                        <button class="space-btn submit" @onclick="() => SubmitItem.InvokeAsync(item)">
+                        <button class="space-btn submit" style="padding: var(--btn-padding-vertical) var(--btn-padding-horizontal); font-size: var(--btn-font-size-md);" @onclick="() => SubmitItem.InvokeAsync(item)">
                             Move to cart
                         </button>
                     }
 
-                    <button class="space-btn remove" @onclick="() => RemoveItem.InvokeAsync(item)">
+                    <button class="space-btn remove" style="padding: var(--btn-padding-vertical) var(--btn-padding-horizontal); font-size: var(--btn-font-size-md);" @onclick="() => RemoveItem.InvokeAsync(item)">
                         Remove item
                     </button>
                 </div>
@@ -38,8 +38,6 @@
     }
 </ul>
 
-
-
 <style>
     /* Cosmic background for the list */
     .space-list {
@@ -51,28 +49,25 @@
         gap: 1rem;
     }
 
-    /* Each item card looks like a glowing panel */
+    /* Each item card looks like a panel */
     .space-list-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 1rem;
         border-radius: 14px;
-        background: radial-gradient(circle at top left, rgba(30,30,60,0.9), rgba(10,10,20,0.95));
-        border: 1px solid rgba(120,180,255,0.3);
-        box-shadow: 0 0 20px rgba(120,180,255,0.25);
-        transition: all 0.3s ease;
+        border: 1px solid rgba(var(--accent-rgb),0.3);
+        transition: all 0.18s ease;
     }
 
         .space-list-item:hover {
             transform: translateY(-3px);
-            box-shadow: 0 0 30px rgba(120,180,255,0.5);
         }
 
-        /* Cart items glow differently */
+        /* Cart items highlight differently */
         .space-list-item.in-cart {
             border-color: rgba(255,180,80,0.5);
-            box-shadow: 0 0 25px rgba(255,180,80,0.4);
+            background-color: var(--panel-selected-color);
         }
 
     /* Item info */
@@ -84,81 +79,44 @@
     .item-name {
         font-size: 1.1rem;
         font-weight: 600;
-        color: #e0e6ff; /* starlight blue */
+        color: var(--starlight); /* starlight blue */
     }
 
     .item-genre {
         font-size: 0.85rem;
-        color: #9aa0c2;
+        color: var(--muted);
     }
 
     /* Actions area */
     .item-actions {
         display: flex;
-        gap: 0.6rem;
+        gap: 0.4rem;
     }
 
-    /* Futuristic space buttons */
+    /* Button variants simplified (no large shadows) */
     .space-btn {
-        position: relative;
-        padding: 0.6rem 1.2rem;
-        border: none;
-        border-radius: 10px;
-        font-size: 0.9rem;
+        border-radius: 8px;
         font-weight: 600;
-        cursor: pointer;
         color: #fff;
-        background: linear-gradient(135deg, rgba(40,40,80,0.9), rgba(20,20,40,0.9));
-        transition: all 0.3s ease;
-        box-shadow: 0 0 12px rgba(120,180,255,0.4);
+        border: none;
+        box-shadow: none; /* removed */
     }
 
-        /* Hover glow */
-        .space-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(120,180,255,0.8);
-        }
+    .space-btn.submit { background: var(--primary); }
+    .space-btn.move { background: var(--move-start); }
+    .space-btn.remove { background: var(--remove-start); }
 
-        /* Variants with cosmic colors */
-        .space-btn.submit {
-            background: linear-gradient(135deg, #3a9bdc, #1e3a8a); /* blue nebula */
-            box-shadow: 0 0 15px rgba(80,160,255,0.7);
-        }
-
-            .space-btn.submit:hover {
-                box-shadow: 0 0 25px rgba(80,160,255,1);
-            }
-
-        .space-btn.move {
-            background: linear-gradient(135deg, #b37aff, #5a2d91); /* purple galaxy */
-            box-shadow: 0 0 15px rgba(180,120,255,0.7);
-        }
-
-            .space-btn.move:hover {
-                box-shadow: 0 0 25px rgba(180,120,255,1);
-            }
-
-        .space-btn.remove {
-            background: linear-gradient(135deg, #ff4d6d, #7a1c2f); /* red supernova */
-            box-shadow: 0 0 15px rgba(255,80,120,0.7);
-        }
-
-            .space-btn.remove:hover {
-                box-shadow: 0 0 25px rgba(255,80,120,1);
-            }
-
-        /* Disabled state */
-        .space-btn:disabled {
-            background: rgba(80,80,120,0.4);
-            box-shadow: none;
-            color: #aaa;
-            cursor: not-allowed;
-        }
+    /* Disabled state */
+    .space-btn:disabled {
+        background: rgba(80,80,120,0.4);
+        color: #aaa;
+        cursor: not-allowed;
+    }
 
     /* Empty message */
     .empty-message {
         text-align: center;
-        color: #9aa0c2;
+        color: var(--muted);
         font-style: italic;
         padding: 1rem;
     }

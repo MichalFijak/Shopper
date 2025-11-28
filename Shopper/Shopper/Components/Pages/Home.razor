@@ -1,5 +1,42 @@
 ﻿@page "/"
 
-<h1>Time for shopping!</h1>
+<h1>@welcomeMessage</h1>
 
-Choose bookmark from the menu!
+<style>
+
+    h1 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 2rem;
+        color: #66fcf1;
+        text-shadow: 0 0 8px #45a29e;
+        text-align: center;
+        margin: 20px;
+    }
+
+    }
+</style>
+
+
+@code {
+    private string[] messages = new[]
+    {
+    "Miłość miłością… ale kto kupi ketchup?",
+    "Wspólna lista – jedyny sposób, by nie wrócić z 5 paczkami chipsów.",
+    "Zakupy we dwoje: ona planuje, ty improwizujesz… Shoper App godzi światy.",
+    "Bo romantyzm kończy się tam, gdzie zaczyna się pusty lodówka.",
+    "Shoper App – mniej kłótni, więcej czekolady.",
+    "Lista zakupów: najprostszy test zgodności charakterów.",
+    "Kto kocha, ten pamięta… a kto nie pamięta, ma Shoper App.",
+    "Zakupy w parze – bo nawet gwiezdni bohaterowie nie działali solo.",
+    "Shoper App – bo życie to nie bajka, a zakupy to nie misja solo.",
+    "Miłość jest ślepa… ale Shoper App widzi, że zabrakło kawy."
+};
+
+    private string welcomeMessage;
+
+    protected override void OnInitialized()
+    {
+        var random = new Random();
+        welcomeMessage = messages[random.Next(messages.Length)];
+    }
+}
