@@ -7,12 +7,15 @@
 @using Shopper.Services.Components.State
 @inject IItemsService itemsService
 
+@implements IDisposable
+@implements IAsyncDisposable
+
 <div class="carousel-container">
     <h2 class="section-title">Wybierz liste:</h2>
-    <div class="carousel" @onpointerdown="HandleSwipeStart" @onpointerup="HandleSwipeEnd">
+    <div id="carousel" class="carousel" @onpointerdown="HandleSwipeStart" @onpointerup="HandleSwipeEnd">
         @foreach (var category in categories)
         {
-            <label id="card-@category.Value" class="carousel-card @(IsSelected(category.Value) ? "selected" : "")">
+            <label id="card-@category.Value" data-value="@category.Value" class="carousel-card @(IsSelected(category.Value) ? "selected" : "")">
                 <input type="radio"
                        name="listSelection"
                        value="@category.Value"
@@ -121,6 +124,59 @@
     private int selectedIndex = 0;
     private double startX;
 
+    private DotNetObjectReference<CarouselInterop>? dotNetRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (dotNetRef == null)
+        {
+            var interop = new CarouselInterop(async (value) => await OnCenteredFromJs(value));
+            dotNetRef = DotNetObjectReference.Create(interop);
+        }
+
+        // (Re)attach observer — observeCarousel is idempotent and will ignore duplicates.
+        try
+        {
+            await JS.InvokeVoidAsync("observeCarousel", "carousel", dotNetRef);
+        }
+        catch
+        {
+            // ignore JS errors during navigation transitions
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // disconnect JS observer and dispose reference when component is removed/navigated away
+        try
+        {
+            await JS.InvokeVoidAsync("disconnectCarousel", "carousel");
+        }
+        catch { }
+
+        if (dotNetRef != null)
+        {
+            dotNetRef.Dispose();
+            dotNetRef = null;
+        }
+    }
+
+    public void Dispose()
+    {
+        // unsubscribe events
+        itemsService.OnItemsChanged -= HandleItemsChanged;
+    }
+
+    // Called by interop helper
+    private Task OnCenteredFromJs(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return Task.CompletedTask;
+        selectedList = value;
+        selectedIndex = categories.FindIndex(c => c.Value == selectedList);
+        itemsService.SetSelectedList(selectedList);
+        return InvokeAsync(StateHasChanged);
+    }
+
     // helper to flatten items safely
     private IEnumerable<ItemDto> AllItems => items.SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>());
 
@@ -148,8 +204,6 @@
     private async Task SubmitItem(ItemDto item) => await itemsService.MoveToCartAsync(item);
     private async Task RemoveItem(ItemDto item) => await itemsService.RemoveItemAsync(item);
     private async Task MoveItemFromCart(ItemDto item) => await itemsService.MoveToCartAsync(item);
-
-    public void Dispose() => itemsService.OnItemsChanged -= HandleItemsChanged;
 
     private bool IsSelected(string value) => selectedList == value;
 
@@ -225,4 +279,16 @@
         ("Unknown", "Reszta"),
         ("Cart", "Koszyk")
     };
+
+    private class CarouselInterop
+    {
+        private readonly Func<string, Task> callback;
+        public CarouselInterop(Func<string, Task> callback)
+        {
+            this.callback = callback;
+        }
+
+        [JSInvokable]
+        public Task NotifyCenteredCategory(string value) => callback(value);
+    }
 }
