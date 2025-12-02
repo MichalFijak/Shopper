@@ -267,18 +267,7 @@
         return Enumerable.Empty<ItemDto>();
     }
 
-    private readonly List<(string Value, string Label)> categories = new()
-    {
-        ("MainList", "Aktualna lista"),
-        ("Dairy", "Nabial"),
-        ("Meat", "Mieso"),
-        ("Wheat", "Zboze"),
-        ("Fruit", "Owoce"),
-        ("Vegetables", "Warzywa"),
-        ("Beverages", "Napoje"),
-        ("Unknown", "Reszta"),
-        ("Cart", "Koszyk")
-    };
+
 
     private class CarouselInterop
     {
@@ -291,4 +280,16 @@
         [JSInvokable]
         public Task NotifyCenteredCategory(string value) => callback(value);
     }
+        private readonly List<(string Value, string Label)> categories = new()
+    {
+        ("MainList", "Aktualna lista"),
+        ("Dairy", "Nabial"),
+        ("Meat", "Mieso"),
+        ("Wheat", "Zboze"),
+        ("Fruit", "Owoce"),
+        ("Vegetables", "Warzywa"),
+        ("Beverages", "Napoje"),
+        ("Unknown", "Reszta"),
+        ("Cart", "Koszyk")
+    };
 }
