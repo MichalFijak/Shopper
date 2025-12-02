@@ -7,72 +7,280 @@
 @using Shopper.Services.Components.State
 @inject IItemsService itemsService
 
-<h1>SelectedList</h1>
-<div>
-    <h2>Choose a list:</h2>
-<div>
-    @foreach (var category in categories)
-    {
-        <label>
-            <input type="radio"
-                   name="listSelection"
-                   value="@category.Value"
-                   checked="@IsSelected(category.Value)"
-                   @onchange="OnSelectionChanged" />
-            @category.Label
-        </label>
-    }
-</div>
+@implements IDisposable
+@implements IAsyncDisposable
+
+<div class="carousel-container">
+    <h2 class="section-title">Wybierz liste:</h2>
+    <div id="carousel" class="carousel" @onpointerdown="HandleSwipeStart" @onpointerup="HandleSwipeEnd">
+        @foreach (var category in categories)
+        {
+            <label id="card-@category.Value" data-value="@category.Value" class="carousel-card @(IsSelected(category.Value) ? "selected" : "")">
+                <input type="radio"
+                       name="listSelection"
+                       value="@category.Value"
+                       checked="@IsSelected(category.Value)"
+                       @onchange="OnSelectionChanged" />
+                <span class="list-label">@category.Label</span>
+            </label>
+        }
+    </div>
 </div>
 
-<ItemsCategory SelectedList="@selectedList" Items="@items" SubmitItem="@SubmitItem" MoveItemFromCart="@MoveItemFromCart" RemoveItem="@RemoveItem" />
+<ItemsCategory @key="selectedList"
+               SelectedList="@selectedList"
+               Items="@items"
+               SubmitItem="@SubmitItem"
+               MoveItemFromCart="@MoveItemFromCart"
+               RemoveItem="@RemoveItem" />
+
+<style>
+    /* Page title */
+    .page-title {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 2rem;
+        color: var(--starlight);
+        text-align: center;
+        margin-bottom: 1rem;
+        text-shadow: none;
+    }
+
+    /* Carousel container */
+    .carousel-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 1rem;
+        border-radius: 16px;
+        background-color: var(--panel-color);
+        border: 1px solid rgba(var(--accent-rgb),0.12);
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--starlight);
+        text-align: center;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid rgba(var(--accent-rgb),0.08);
+        padding-bottom: 0.5rem;
+        letter-spacing: 1px;
+    }
+
+    /* Carousel styling */
+    .carousel {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .carousel-card {
+        flex: 0 0 180px;
+        scroll-snap-align: center;
+        border-radius: 12px;
+        border: 1px solid rgba(var(--accent-rgb),0.08);
+        background-color: var(--panel-color);
+        color: var(--starlight);
+        transition: all 0.18s ease;
+        padding: 0.5rem;
+        text-align: center;
+        cursor: pointer;
+    }
+
+        .carousel-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .carousel-card.selected {
+            background-color: var(--panel-selected-color);
+            border-color: rgba(var(--accent-rgb),0.18);
+            color: #fff;
+        }
+
+    .list-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    /* Debug panel (optional) */
+    .debug-panel {
+        margin: 1rem;
+        padding: 0.5rem;
+        border: 1px dashed rgba(var(--accent-rgb),0.06);
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+</style>
 
 @code {
+    [Inject] private IJSRuntime JS { get; set; }
+
     protected string selectedList = "MainList";
     protected List<ItemGroupDto> items = new();
+    private int selectedIndex = 0;
+    private double startX;
+
+    private DotNetObjectReference<CarouselInterop>? dotNetRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (dotNetRef == null)
+        {
+            var interop = new CarouselInterop(async (value) => await OnCenteredFromJs(value));
+            dotNetRef = DotNetObjectReference.Create(interop);
+        }
+
+        // (Re)attach observer — observeCarousel is idempotent and will ignore duplicates.
+        try
+        {
+            await JS.InvokeVoidAsync("observeCarousel", "carousel", dotNetRef);
+        }
+        catch
+        {
+            // ignore JS errors during navigation transitions
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // disconnect JS observer and dispose reference when component is removed/navigated away
+        try
+        {
+            await JS.InvokeVoidAsync("disconnectCarousel", "carousel");
+        }
+        catch { }
+
+        if (dotNetRef != null)
+        {
+            dotNetRef.Dispose();
+            dotNetRef = null;
+        }
+    }
+
+    public void Dispose()
+    {
+        // unsubscribe events
+        itemsService.OnItemsChanged -= HandleItemsChanged;
+    }
+
+    // Called by interop helper
+    private Task OnCenteredFromJs(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return Task.CompletedTask;
+        selectedList = value;
+        selectedIndex = categories.FindIndex(c => c.Value == selectedList);
+        itemsService.SetSelectedList(selectedList);
+        return InvokeAsync(StateHasChanged);
+    }
+
+    // helper to flatten items safely
+    private IEnumerable<ItemDto> AllItems => items.SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>());
 
     protected override async Task OnInitializedAsync()
     {
         selectedList = itemsService.GetSelectedList();
+
+        selectedIndex = categories.FindIndex(c => c.Value == selectedList);
+        if (selectedIndex < 0) selectedIndex = 0;
+
         itemsService.OnItemsChanged += HandleItemsChanged;
         items = await itemsService.RefreshItemsAsync();
+
+        // ensure UI updates after initial load
+        await InvokeAsync(StateHasChanged);
     }
 
     private void HandleItemsChanged()
     {
         items = itemsService.GetCachedItems();
+        // force UI refresh from non-UI threads safely
         InvokeAsync(StateHasChanged);
     }
 
-    private async Task SubmitItem(ItemDto item)
-    {
-        await itemsService.MoveToCartAsync(item);
-    }
-
-    private async Task RemoveItem(ItemDto item)
-    {
-        await itemsService.RemoveItemAsync(item);
-    }
-
-    private async Task MoveItemFromCart(ItemDto item)
-    {
-        await itemsService.MoveToCartAsync(item);
-    }
-
-    public void Dispose()
-    {
-        itemsService.OnItemsChanged -= HandleItemsChanged;
-    }
+    private async Task SubmitItem(ItemDto item) => await itemsService.MoveToCartAsync(item);
+    private async Task RemoveItem(ItemDto item) => await itemsService.RemoveItemAsync(item);
+    private async Task MoveItemFromCart(ItemDto item) => await itemsService.MoveToCartAsync(item);
 
     private bool IsSelected(string value) => selectedList == value;
 
-    private void OnSelectionChanged(ChangeEventArgs e)
+    private async Task OnSelectionChanged(ChangeEventArgs e)
     {
         selectedList = e.Value?.ToString() ?? "MainList";
+        selectedIndex = categories.FindIndex(c => c.Value == selectedList);
         itemsService.SetSelectedList(selectedList);
+
+        await InvokeAsync(StateHasChanged);
     }
 
-    private readonly List<(string Value, string Label)> categories = new()
+    private void HandleSwipeStart(PointerEventArgs e) => startX = e.ClientX;
+
+    private void HandleSwipeEnd(PointerEventArgs e)
+    {
+        var deltaX = e.ClientX - startX;
+        if (deltaX > 50) SelectPreviousCategory();
+        else if (deltaX < -50) SelectNextCategory();
+    }
+
+    private async Task ScrollToSelectedAsync() => await JS.InvokeVoidAsync("cardScrollIntoView", $"card-{selectedList}");
+
+    private async void SelectNextCategory()
+    {
+        if (selectedIndex < categories.Count - 1)
+        {
+            selectedIndex++;
+            selectedList = categories[selectedIndex].Value;
+            itemsService.SetSelectedList(selectedList);
+            await ScrollToSelectedAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async void SelectPreviousCategory()
+    {
+        if (selectedIndex > 0)
+        {
+            selectedIndex--;
+            selectedList = categories[selectedIndex].Value;
+            itemsService.SetSelectedList(selectedList);
+            await ScrollToSelectedAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private IEnumerable<ItemDto> GetCurrentCategoryItems()
+    {
+        if (Enum.TryParse<ItemCategory>(selectedList, out var cat))
+        {
+            return cat switch
+            {
+                ItemCategory.MainList => items.Where(g => !g.InCart).SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>()),
+                ItemCategory.Cart => items.Where(g => g.InCart).SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>()),
+                _ => items.SelectMany(g => g.Items ?? Enumerable.Empty<ItemDto>())
+                          .Where(i => Enum.TryParse<ItemCategory>(i.Genre, true, out var parsed) ? parsed == cat : cat == ItemCategory.Unknown)
+            };
+        }
+
+        return Enumerable.Empty<ItemDto>();
+    }
+
+
+
+    private class CarouselInterop
+    {
+        private readonly Func<string, Task> callback;
+        public CarouselInterop(Func<string, Task> callback)
+        {
+            this.callback = callback;
+        }
+
+        [JSInvokable]
+        public Task NotifyCenteredCategory(string value) => callback(value);
+    }
+        private readonly List<(string Value, string Label)> categories = new()
     {
         ("MainList", "Aktualna lista"),
         ("Dairy", "Nabial"),
@@ -84,5 +292,4 @@
         ("Unknown", "Reszta"),
         ("Cart", "Koszyk")
     };
-
 }
