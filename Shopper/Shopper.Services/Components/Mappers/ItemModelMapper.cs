@@ -12,9 +12,10 @@ namespace Shopper.Services.Components.Mappers
                 var description = itemMap.TryGetValue("Description", out var descVal) && descVal is Dictionary<string, object> descMap
                     ? new ItemModelDescription
                     {
-                        Genre = descMap.TryGetValue("Genre", out var genreVal) ? genreVal?.ToString() : null,
-                        Description = descMap.TryGetValue("Description", out var descriptionVal) ? descriptionVal?.ToString() : null,
-                        Price = descMap.TryGetValue("Price", out var priceVal) && decimal.TryParse(priceVal?.ToString(), out var price) ? price : null
+                        Genre = descMap.TryGetValue("Genre", out var genreVal) ? genreVal?.ToString() : "",
+                        Description = descMap.TryGetValue("Description", out var descriptionVal) ? descriptionVal?.ToString() : "",
+                        Price = descMap.TryGetValue("Price", out var priceVal) ? priceVal.ToString() : "",
+                        Amount = descMap.TryGetValue("Amount", out var amountVal) ? amountVal?.ToString() : ""
                     }
                     : null;
 

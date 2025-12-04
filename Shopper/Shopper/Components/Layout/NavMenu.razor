@@ -25,3 +25,122 @@
         </div>
     </nav>
 </div>
+
+<style>
+.top-row.navbar {
+    background: var(--panel-color);
+    border-bottom: 1px solid rgba(var(--accent-rgb), 0.08);
+    padding: 0.6rem 1rem;
+    box-shadow: 0 0 10px rgba(var(--neon-rgb), 0.08);
+}
+
+/* Brand */
+.navbar-brand {
+    color: var(--neon);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-shadow: 0 0 6px rgba(var(--neon-rgb), 0.6);
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+.navbar-brand:hover {
+    color: var(--accent);
+    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.7);
+}
+
+/* ⚡ Futuristic Hamburger toggle */
+.navbar-toggler {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 42px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(var(--accent-rgb), 0.15);
+    background: var(--panel-color);
+    position: relative;
+    margin: 0.4rem;
+    cursor: pointer;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.navbar-toggler:hover {
+    border-color: var(--neon);
+    box-shadow: 0 0 8px rgba(var(--neon-rgb), 0.5);
+    transform: scale(1.05);
+}
+.navbar-toggler::before,
+.navbar-toggler::after,
+.navbar-toggler span {
+    content: '';
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--starlight);
+    border-radius: 2px;
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+.navbar-toggler::before { top: 9px; }
+.navbar-toggler span { top: 15px; }
+.navbar-toggler::after { top: 21px; }
+.navbar-toggler:hover::before,
+.navbar-toggler:hover::after,
+.navbar-toggler:hover span {
+    background: var(--neon);
+    box-shadow: 0 0 6px rgba(var(--neon-rgb), 0.7);
+}
+
+/* Scrollable nav panel */
+.nav-scrollable {
+    background: var(--panel-color);
+    padding-top: 0.5rem;
+    border-left: 1px solid rgba(var(--accent-rgb), 0.05);
+}
+.nav-scrollable nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+/* Items */
+.nav-item { margin: 0.25rem 0; }
+
+/* Links */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--starlight);
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    position: relative;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.nav-link.active,
+.nav-link:hover {
+    background-color: rgba(var(--accent-rgb), 0.08);
+    color: var(--neon);
+    box-shadow: 0 0 8px rgba(var(--neon-rgb), 0.25);
+}
+.nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--neon);
+    box-shadow: 0 0 6px rgba(var(--neon-rgb), 0.6);
+}
+.nav-link .bi {
+    color: var(--accent);
+    transition: color 0.2s ease;
+}
+.nav-link:hover .bi {
+    color: var(--neon);
+}
+</style>

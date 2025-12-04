@@ -13,8 +13,9 @@ namespace Shopper.Core.Components.Entity
         public string? Description { get; set; }
         
         [FirestoreProperty]
-        public decimal? Price { get; set; }
+        public string? Price { get; set; }
 
-
+        [FirestoreProperty]
+        public string? Amount { get; set; }
     }
 }

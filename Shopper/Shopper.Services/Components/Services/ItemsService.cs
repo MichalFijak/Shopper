@@ -7,6 +7,7 @@ using Shopper.Services.Components.Dtos;
 using Shopper.Services.Components.Mappers;
 using Shopper.Services.Components.Policies;
 using Shopper.Services.Components.State;
+using System.Diagnostics;
 
 public class ItemsService : IItemsService
 {
@@ -133,6 +134,11 @@ public class ItemsService : IItemsService
     {
         state.SetItemToModify(item);
 
+    }
+
+    public ItemDto GetItemToModify()
+    {
+        return state.GetItemToModify();
     }
 
     public List<ItemGroupDto> GetCachedItems()

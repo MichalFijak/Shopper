@@ -79,10 +79,6 @@
 		<ProjectReference Include="..\Shopper.Services\Shopper.Services.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="Data\" />
-	</ItemGroup>
-
 
 
 

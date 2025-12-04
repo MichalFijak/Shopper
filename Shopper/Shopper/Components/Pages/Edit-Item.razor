@@ -2,31 +2,140 @@
 @using Shopper.Services.Components.Dtos
 @inject IItemsService itemsService
 @inject NavigationManager Navigation
-<h1>Edit New Item</h1>
-<div>
-    <input type="text" class="form-control" placeholder="Item Name" @bind="newItem.Name" />
-    <input type="text" class="form-control" placeholder="Genre" @bind="newItem.Genre" />
-    <input type="number" class="form-control" placeholder="New amount" @bind="amount" />
-    <button class="btn btn-success" @onclick="SaveItem">Save</button>
-    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+
+<h1>@itemToModify.Name</h1>
+
+<div class="edit-item-form">
+    <input type="text" class="form-input"
+           placeholder="@(itemToModify.Name ?? "Nazwa")"
+           @bind="newItem.Name" />
+
+    <input type="text" class="form-input"
+           placeholder="@(itemToModify.Genre ?? "Rodzaj")"
+           @bind="newItem.Genre" />
+
+    <input type="number" class="form-input"
+           placeholder="@($"Cena {itemToModify.Price}")"
+           @bind="newItem.Price" />
+
+    <input type="text" class="form-input"
+           placeholder="@(itemToModify.Description ?? "Opis")"
+           @bind="newItem.Description" />
+
+    <input type="text" class="form-input"
+           placeholder="@($"{itemToModify?.Name ?? "Item"} Amount")"
+           @bind="newItem.Amount" />
+
+    <div class="form-actions">
+        <button class="space-btn submit" @onclick="SaveItem">Save</button>
+        <button class="space-btn move" @onclick="Cancel">Cancel</button>
+    </div>
 </div>
 
+<style>
+    /* Formularz */
+    .edit-item-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        background: var(--panel-color);
+        border-radius: 12px;
+        box-shadow: 0 0 12px rgba(var(--neon-rgb),0.15);
+    }
+
+    /* Pola input */
+    .form-input {
+        background: #1a1d24;
+        border: 1px solid rgba(var(--accent-rgb),0.3);
+        border-radius: 8px;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+        color: var(--text);
+        font-family: 'Exo 2', sans-serif;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--neon);
+        box-shadow: 0 0 8px rgba(var(--neon-rgb),0.4);
+    }
+
+    /* Sekcja przycisków */
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.8rem;
+        margin-top: 1rem;
+    }
+
+    /* Przyciski w stylu neonowym */
+    .space-btn {
+        flex: 1;
+        border-radius: 8px;
+        font-weight: 600;
+        color: #fff;
+        border: none;
+        box-shadow: none;
+        padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);
+        font-size: var(--btn-font-size-md);
+        text-transform: uppercase;
+        transition: background 0.2s ease, transform 0.2s ease;
+        cursor: pointer;
+    }
+
+    .space-btn:hover {
+        transform: scale(1.05);
+    }
+
+    .space-btn.submit {
+        background: linear-gradient(135deg, var(--submit-start), var(--submit-end));
+    }
+
+    .space-btn.move {
+        background: linear-gradient(135deg, var(--move-start), var(--move-end));
+    }
+</style>
+
 @code {
-
-
     private ItemDto newItem = new ItemDto();
-    private int amount;
+    private ItemDto itemToModify = new ItemDto();
+
+    protected override void OnInitialized()
+    {
+        itemToModify = itemsService.GetItemToModify();
+
+        if (itemToModify == null)
+        {
+            itemToModify = new ItemDto
+            {
+                Name = "Nazwa",
+                Genre = "Rodzaj",
+                Price = "0",
+                Description = "Opis"
+            };
+        }
+
+        newItem = new ItemDto
+        {
+            Name = itemToModify.Name,
+            Genre = itemToModify.Genre,
+            Price = itemToModify.Price,
+            Description = itemToModify.Description,
+            Amount=itemToModify.Amount
+        };
+    }
+
     private void SaveItem()
     {
-        
-        if((newItem == null || string.IsNullOrWhiteSpace(newItem.Name) || string.IsNullOrWhiteSpace(newItem.Genre)) && amount<=0)
+        if ((newItem == null || string.IsNullOrWhiteSpace(newItem.Name) || string.IsNullOrWhiteSpace(newItem.Genre)) || string.IsNullOrWhiteSpace(newItem.Amount))
         {
             return;
         }
-        if (newItem == null || string.IsNullOrWhiteSpace(newItem.Name) || string.IsNullOrWhiteSpace(newItem.Genre))
-        {
-            return;
-        }
+
         itemsService.ModifyItemAsync(newItem);
         Navigation.NavigateTo("/edit-shopping-list");
     }

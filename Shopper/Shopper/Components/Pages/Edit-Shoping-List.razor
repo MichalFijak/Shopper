@@ -10,22 +10,99 @@
     <button class="btn btn-primary" @onclick="NavigateToAddItem">Add new item</button>
 </div>
 
-<ul>
+<ul class="item-list">
     @foreach (var entity in items)
     {
         @foreach (var item in entity.Items)
         {
-            <li>
-                <div @onclick="() => NavigateToModifyItem(item)">
-                    <span>@item.Name</span>
-                    <span>| rodzaj: @item.Genre |</span>
-                    <span> cena: @item.Price</span>
+            <li class="item-card">
+                <div class="item-content" @onclick="() => NavigateToModifyItem(item)">
+                    <h3 class="item-name">@item.Name</h3>
+                    <p class="item-detail">Rodzaj: <span>@item.Genre</span></p>
+                    <p class="item-detail">Cena: <span>@item.Price</span></p>
+                    <p class="item-detail">Ilość: <span>@item.Amount</span></p>
+                    <p class="item-description">Opis: @item.Description</p>
                 </div>
-                <button @onclick="() => RemoveItem(item)">remove item</button>
+                <button class="remove-btn" @onclick="() => RemoveItem(item)">Usuń</button>
             </li>
         }
     }
 </ul>
+
+<style>
+
+.item-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.item-card {
+    background: var(--panel-color);
+    border-radius: 10px;
+    margin: 12px 0;
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    box-shadow: 0 0 12px rgba(var(--neon-rgb), 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 16px rgba(var(--neon-rgb), 0.25);
+}
+
+.item-content {
+    flex: 1;
+    cursor: pointer;
+}
+
+.item-name {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--neon);
+    margin: 0 0 8px;
+    text-shadow: 0 0 6px var(--teal);
+}
+
+.item-detail {
+    margin: 3px 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.item-detail span {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.item-description {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    color: var(--text);
+    opacity: 0.85;
+}
+
+.remove-btn {
+    background: linear-gradient(135deg, var(--remove-start), var(--remove-end));
+    color: var(--btn-text);
+    border: none;
+    border-radius: 6px;
+    padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);
+    font-size: var(--btn-font-size-md);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.remove-btn:hover {
+    background: var(--remove-start);
+}
+
+</style>
+
 
 @code {
     private List<ItemGroupDto> items = new();

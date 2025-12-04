@@ -10,10 +10,11 @@ namespace Shopper.Services.Components.Mappers
             return new ItemDto
             {
                 Name = item.Name,
-                Genre = item.Description?.Genre,
-                Description = item.Description?.Description,
-                Price = item.Description?.Price,
-                InCart = item.InCart
+                InCart = item.InCart,
+                Genre = item.Description?.Genre ?? "",
+                Description = item.Description?.Description ?? "",
+                Price = item.Description?.Price ?? "",
+                Amount= item.Description?.Amount?? ""
             };
         }
         public static ItemModel ConvertToModel(this ItemDto itemDto)
@@ -47,7 +48,8 @@ namespace Shopper.Services.Components.Mappers
             {
                 Genre = itemDto.Genre,
                 Description = itemDto.Description,
-                Price = itemDto.Price
+                Price = itemDto.Price,
+                Amount=itemDto.Amount
             };
         }
 

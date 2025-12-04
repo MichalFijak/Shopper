@@ -1,7 +1,9 @@
 ﻿using Google.Cloud.Firestore;
+using Newtonsoft.Json;
 using Shopper.Core.Components.Entity;
 using Shopper.Core.Components.Factory;
 using Shopper.Core.Components.Interfaces;
+using System.Diagnostics;
 
 namespace Shopper.Data.Infrastructure.Firebase.Webhooks
 {
@@ -33,7 +35,7 @@ namespace Shopper.Data.Infrastructure.Firebase.Webhooks
 
             var docRef = firebaseClient.Document(path);
 
-            await docRef.SetAsync(data, SetOptions.MergeAll);
+            await docRef.SetAsync(data, SetOptions.Overwrite);
         }
 
         public async Task DeleteItemAsync(string path)
