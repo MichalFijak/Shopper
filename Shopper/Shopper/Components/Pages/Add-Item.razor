@@ -4,8 +4,12 @@
 @inject IItemsService itemsService
 <h1>Add New Item</h1>
 <div>
-    <input type="text" class="form-control" placeholder="Item Name" @bind="newItem.Name" />
-    <input type="text" class="form-control" placeholder="Genre" @bind="newItem.Genre" />
+    <input type="text" class="form-control" placeholder="Nazwa" @bind="newItem.Name" />
+    <input type="text" class="form-control" placeholder="Rodzaj" @bind="newItem.Genre" />
+    <input type="text" class="form-control" placeholder="Opis" @bind="newItem.Description" />
+    <input type="text" class="form-control" placeholder="Cena" @bind="newItem.Price" />
+    <input type="text" class="form-control" placeholder="Ilosc" @bind="newItem.Amount" />
+
     <button class="btn btn-success" @onclick="SaveItem">Save</button>
     <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
 </div>

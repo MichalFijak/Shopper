@@ -17,7 +17,7 @@ public interface IItemsService
     Task<List<ItemGroupDto>> RefreshItemsAsync();
 
     string GetSelectedList();
-
+    ItemDto GetItemToModify();
     void StopRealtimeSync();
 }
 
