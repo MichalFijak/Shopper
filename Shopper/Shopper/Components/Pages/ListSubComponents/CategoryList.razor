@@ -5,27 +5,46 @@
     {
         @foreach (var item in Items)
         {
-            <li class="space-list-item @(item.InCart ? "in-cart" : "")" style="background-color: var(--panel-color);">
+            <li class="space-list-item @(item.InCart ? "in-cart" : "")">
                 <div class="item-info">
                     <span class="item-name">@item.Name</span>
-                    <span class="item-genre">(@item.Genre)</span>
+
+                    @if (!string.IsNullOrWhiteSpace(item.Genre))
+                    {
+                        <span class="item-genre">(@item.Genre)</span>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                    {
+                        <span class="item-description">(@item.Description)</span>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(item.Price))
+                    {
+                        <span class="item-price">$ @item.Price</span>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(item.Amount))
+                    {
+                        <span class="item-amount">x @item.Amount</span>
+                    }
                 </div>
 
                 <div class="item-actions">
                     @if (item.InCart)
                     {
-                        <button class="space-btn move" style="padding: var(--btn-padding-vertical) var(--btn-padding-horizontal); font-size: var(--btn-font-size-md);" @onclick="() => MoveItemFromCart.InvokeAsync(item)">
+                        <button class="space-btn move" @onclick="() => MoveItemFromCart.InvokeAsync(item)">
                             Move from cart
                         </button>
                     }
                     else
                     {
-                        <button class="space-btn submit" style="padding: var(--btn-padding-vertical) var(--btn-padding-horizontal); font-size: var(--btn-font-size-md);" @onclick="() => SubmitItem.InvokeAsync(item)">
+                        <button class="space-btn submit" @onclick="() => SubmitItem.InvokeAsync(item)">
                             Move to cart
                         </button>
                     }
 
-                    <button class="space-btn remove" style="padding: var(--btn-padding-vertical) var(--btn-padding-horizontal); font-size: var(--btn-font-size-md);" @onclick="() => RemoveItem.InvokeAsync(item)">
+                    <button class="space-btn remove" @onclick="() => RemoveItem.InvokeAsync(item)">
                         Remove item
                     </button>
                 </div>
@@ -38,8 +57,8 @@
     }
 </ul>
 
+
 <style>
-    /* Cosmic background for the list */
     .space-list {
         list-style: none;
         padding: 0;
@@ -49,82 +68,110 @@
         gap: 1rem;
     }
 
-    /* Each item card looks like a panel */
     .space-list-item {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         padding: 1rem;
         border-radius: 14px;
-        border: 1px solid rgba(var(--accent-rgb),0.3);
-        transition: all 0.18s ease;
+        border: 1px solid rgba(var(--accent-rgb),0.25);
+        background-color: var(--panel-color);
+        box-shadow: 0 0 12px rgba(var(--neon-rgb),0.15);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
-        .space-list-item:hover {
-            transform: translateY(-3px);
-        }
+    .space-list-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 16px rgba(var(--neon-rgb),0.25);
+    }
 
-        /* Cart items highlight differently */
-        .space-list-item.in-cart {
-            border-color: rgba(255,180,80,0.5);
-            background-color: var(--panel-selected-color);
-        }
+    .space-list-item.in-cart {
+        border-color: rgba(255,180,80,0.6);
+        background-color: var(--panel-selected-color);
+    }
 
-    /* Item info */
     .item-info {
         display: flex;
         flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
     }
 
     .item-name {
         font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--starlight); /* starlight blue */
+        font-weight: 700;
+        color: var(--neon);
+        text-shadow: 0 0 6px var(--teal);
     }
 
-    .item-genre {
+    .item-genre,
+    .item-description,
+    .item-price,
+    .item-amount {
         font-size: 0.85rem;
         color: var(--muted);
     }
 
-    /* Actions area */
-    .item-actions {
-        display: flex;
-        gap: 0.4rem;
+    .item-price {
+        font-weight: 600;
+        color: var(--starlight);
     }
 
-    /* Button variants simplified (no large shadows) */
+    .item-amount {
+        font-weight: 600;
+        color: var(--accent);
+    }
+
+    .item-actions {
+        display: flex;
+        flex-direction: column; /* mobile-friendly */
+        gap: 0.5rem;
+        margin-left: 1rem;
+    }
+
     .space-btn {
         border-radius: 8px;
         font-weight: 600;
         color: #fff;
         border: none;
-        box-shadow: none; /* removed */
+        box-shadow: none;
+        padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);
+        font-size: var(--btn-font-size-md);
+        text-transform: uppercase;
+        transition: background 0.2s ease, transform 0.2s ease;
     }
 
-    .space-btn.submit { background: var(--primary); }
-    .space-btn.move { background: var(--move-start); }
-    .space-btn.remove { background: var(--remove-start); }
+    .space-btn:hover {
+        transform: scale(1.05);
+    }
 
-    /* Disabled state */
+    .space-btn.submit {
+        background: linear-gradient(135deg, var(--submit-start), var(--submit-end));
+    }
+
+    .space-btn.move {
+        background: linear-gradient(135deg, var(--move-start), var(--move-end));
+    }
+
+    .space-btn.remove {
+        background: linear-gradient(135deg, var(--remove-start), var(--remove-end));
+    }
+
     .space-btn:disabled {
         background: rgba(80,80,120,0.4);
         color: #aaa;
         cursor: not-allowed;
     }
 
-    /* Empty message */
     .empty-message {
         text-align: center;
         color: var(--muted);
         font-style: italic;
         padding: 1rem;
     }
-
 </style>
 
 @code {
-
     [Parameter] public IEnumerable<ItemDto>? Items { get; set; }
 
     [Parameter] public EventCallback<ItemDto> SubmitItem { get; set; }
