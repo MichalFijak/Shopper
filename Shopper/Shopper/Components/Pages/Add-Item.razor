@@ -1,21 +1,96 @@
 @page "/add-item"
+@using Shopper.Components.Elements
+@using Shopper.Core.Components.Enums
 @using Shopper.Services.Components.Dtos
 @inject NavigationManager Navigation
 @inject IItemsService itemsService
-<h1>Add New Item</h1>
-<div>
-    <input type="text" class="form-control" placeholder="Nazwa" @bind="newItem.Name" />
-    <input type="text" class="form-control" placeholder="Rodzaj" @bind="newItem.Genre" />
-    <input type="text" class="form-control" placeholder="Opis" @bind="newItem.Description" />
-    <input type="text" class="form-control" placeholder="Cena" @bind="newItem.Price" />
-    <input type="text" class="form-control" placeholder="Ilosc" @bind="newItem.Amount" />
 
-    <button class="btn btn-success" @onclick="SaveItem">Save</button>
-    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+<h1>Add New Item</h1>
+
+<div class="form-panel">
+    <div class="form-group">
+        <input type="text" placeholder="Nazwa" @bind="newItem.Name" />
+    </div>
+
+    <div class="form-group">
+        <Dropdown Options="@CategoryOptions"
+                        @bind-SelectedValue="newItem.Genre" />
+    </div>
+
+    <div class="form-group">
+        <input type="text" placeholder="Opis" @bind="newItem.Description" />
+    </div>
+    <div class="form-group">
+        <input type="text" placeholder="Cena" @bind="newItem.Price" />
+    </div>
+    <div class="form-group">
+        <input type="text" placeholder="Ilosc" @bind="newItem.Amount" />
+    </div>
+
+    <div class="button-row">
+        <button class="btn-primary" @onclick="SaveItem">Save</button>
+        <button class="btn-secondary" @onclick="Cancel">Cancel</button>
+    </div>
 </div>
 
+<style>
+    .form-panel {
+        background: var(--panel-color);
+        padding: 1rem;
+        border-radius: 8px;
+        max-width: 400px;
+        margin: 0 auto;
+        box-shadow: 0 0 12px rgba(var(--neon-rgb), 0.15);
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 8px 10px;
+        margin: 8px 0;
+        border: 1px solid var(--muted);
+        border-radius: 6px;
+        background: #0b0c10;
+        color: var(--text);
+        font-family: 'Exo 2', sans-serif;
+        font-size: 0.9rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--neon);
+        box-shadow: 0 0 6px rgba(var(--neon-rgb), 0.6);
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(to right, var(--submit-start), var(--submit-end));
+        color: var(--btn-text);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(to right, var(--move-start), var(--move-end));
+        color: var(--btn-text);
+    }
+</style>
+
 @code {
-    private ItemDto newItem = new ItemDto();
+    private ItemDto newItem = new ItemDto
+    {
+        Genre = string.Empty
+    };
+
+
+    private List<(string Value, string Label)> CategoryOptions =
+        ItemCategoryExtensions.PolishNames
+            .Where(kvp => kvp.Key != ItemCategory.MainList && kvp.Key!=ItemCategory.Cart)
+            .Select(kvp => (kvp.Key.ToString(), kvp.Value))
+            .ToList();
 
     private void SaveItem()
     {
@@ -27,4 +102,5 @@
     {
         Navigation.NavigateTo("/edit-shopping-list");
     }
+
 }

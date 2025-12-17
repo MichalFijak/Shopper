@@ -1,0 +1,146 @@
+﻿@namespace Shopper.Components.Elements
+
+<div class="dropdown-container @(IsOpen ? "open" : "")">
+    <div class="dropdown-selected"
+         @onclick="ToggleDropdown"
+         tabindex="0"
+         role="button"
+         aria-haspopup="listbox"
+         aria-expanded="@IsOpen">
+        @SelectedLabel
+        <span class="dropdown-arrow">▼</span>
+    </div>
+
+    @if (IsOpen)
+    {
+        <ul class="dropdown-options" role="listbox">
+            @for (int i = 0; i < Options.Count; i++)
+            {
+                var option = Options[i];
+                var isSelected = option.Value == SelectedValue;
+                var isHovered = i == HoverIndex;
+
+                <li role="option"
+                    class="@(isSelected ? "selected" : "") @(isHovered ? "hover" : "")"
+                    @onmouseenter="() => HoverIndex = i"
+                    @onmouseleave="() => HoverIndex = -1"
+                    @onclick="() => SelectOption(option)">
+                    @option.Label
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+<style>
+    /* === Container === */
+    .dropdown-container {
+        position: relative;
+        width: 100%;
+        margin: 8px 0;
+        font-family: 'Exo 2', sans-serif;
+        font-size: 0.9rem;
+        color: var(--text);
+    }
+
+    /* === Selected box === */
+    .dropdown-selected {
+        background: #0b0c10;
+        border: 1px solid var(--muted);
+        border-radius: 6px;
+        padding: 8px 10px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .dropdown-selected:hover,
+        .dropdown-selected:focus {
+            outline: none;
+            border-color: var(--neon);
+            box-shadow: 0 0 6px rgba(var(--neon-rgb), 0.6);
+        }
+
+    .dropdown-arrow {
+        font-size: 0.8rem;
+        color: var(--text);
+        margin-left: 8px;
+    }
+
+    /* === Options list === */
+    .dropdown-options {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: #0b0c10;
+        border: 1px solid var(--muted);
+        border-radius: 6px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        z-index: 2000; /* ensure above other elements */
+        box-shadow: 0 0 12px rgba(var(--neon-rgb), 0.15);
+    }
+
+        /* === Option item === */
+        .dropdown-options li {
+            display: block; /* ensure full-row hover area */
+            padding: 12px 14px; /* comfortable click/tap target */
+            border-bottom: 1px solid var(--muted);
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+            user-select: none;
+        }
+
+            .dropdown-options li:last-child {
+                border-bottom: none;
+            }
+
+            /* Hover via CSS pseudo-class */
+            .dropdown-options li:hover {
+                background: rgba(var(--neon-rgb), 0.25);
+                color: var(--neon);
+            }
+
+            /* Programmatic hover (for reliable highlight on mobile + keyboard) */
+            .dropdown-options li.hover {
+                background: rgba(var(--neon-rgb), 0.25);
+                color: var(--neon);
+            }
+
+            /* Selected item hint */
+            .dropdown-options li.selected {
+                background: rgba(var(--neon-rgb), 0.12);
+            }
+</style>
+
+@code {
+    [Parameter] public List<(string Value, string Label)> Options { get; set; } = new();
+
+    [Parameter] public string SelectedValue { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> SelectedValueChanged { get; set; }
+
+    private bool IsOpen { get; set; }
+    private int HoverIndex { get; set; } = -1;
+
+    private string SelectedLabel =>
+        Options.FirstOrDefault(o => o.Value == SelectedValue).Label ?? "Wybierz kategorię...";
+
+    private void ToggleDropdown()
+    {
+        IsOpen = !IsOpen;
+        // Reset hover when opening to avoid stale highlight
+        HoverIndex = -1;
+    }
+
+    private async Task SelectOption((string Value, string Label) option)
+    {
+        SelectedValue = option.Value;
+        await SelectedValueChanged.InvokeAsync(option.Value);
+        IsOpen = false;
+        HoverIndex = -1;
+    }
+}
