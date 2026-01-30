@@ -1,5 +1,6 @@
 ﻿@page "/edit-shopping-list"
 @using Shopper.Core.Components.Dtos
+@using Shopper.Core.Components.Enums
 @using Shopper.Services.Components.Dtos
 @inject NavigationManager Navigation
 @inject IItemsService itemsService
@@ -18,7 +19,7 @@
             <li class="item-card">
                 <div class="item-content" @onclick="() => NavigateToModifyItem(item)">
                     <h3 class="item-name">@item.Name</h3>
-                    <p class="item-detail">Rodzaj: <span>@item.Genre</span></p>
+                    <p class="item-detail">Rodzaj: <span>@GetPolishCategory(item.Genre)</span></p>
                     <p class="item-detail">Cena: <span>@item.Price</span></p>
                     <p class="item-detail">Ilość: <span>@item.Amount</span></p>
                     <p class="item-description">Opis: @item.Description</p>
@@ -106,6 +107,19 @@
 
 @code {
     private List<ItemGroupDto> items = new();
+
+    private string GetPolishCategory(string genre)
+    {
+        if (Enum.TryParse<ItemCategory>(genre, out var category) &&
+            ItemCategoryExtensions.PolishNames.TryGetValue(category, out var polish))
+        {
+            return polish;
+        }
+
+        return genre; 
+    }
+
+
 
     protected override async Task OnInitializedAsync()
     {

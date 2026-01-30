@@ -1,5 +1,4 @@
-﻿
-namespace Shopper.Core.Components.Enums
+﻿namespace Shopper.Core.Components.Enums
 {
     public enum ItemCategory
     {

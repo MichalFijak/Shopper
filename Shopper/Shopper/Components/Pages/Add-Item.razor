@@ -1,21 +1,24 @@
 @page "/add-item"
+@using Shopper.Components.Layout
+@using Shopper.Core.Components.Enums
 @using Shopper.Services.Components.Dtos
 @inject NavigationManager Navigation
 @inject IItemsService itemsService
-<h1>Add New Item</h1>
-<div>
-    <input type="text" class="form-control" placeholder="Nazwa" @bind="newItem.Name" />
-    <input type="text" class="form-control" placeholder="Rodzaj" @bind="newItem.Genre" />
-    <input type="text" class="form-control" placeholder="Opis" @bind="newItem.Description" />
-    <input type="text" class="form-control" placeholder="Cena" @bind="newItem.Price" />
-    <input type="text" class="form-control" placeholder="Ilosc" @bind="newItem.Amount" />
 
-    <button class="btn btn-success" @onclick="SaveItem">Save</button>
-    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
-</div>
+<ItemForm Title="Add New Item"
+          Model="@newItem"
+          CategoryOptions="@CategoryOptions"
+          OnSave="SaveItem"
+          OnCancel="Cancel" />
 
 @code {
-    private ItemDto newItem = new ItemDto();
+    private ItemDto newItem = new() { Genre = "" };
+
+    private List<(string Value, string Label)> CategoryOptions =
+        ItemCategoryExtensions.PolishNames
+            .Where(kvp => kvp.Key != ItemCategory.MainList && kvp.Key != ItemCategory.Cart)
+            .Select(kvp => (kvp.Key.ToString(), kvp.Value))
+            .ToList();
 
     private void SaveItem()
     {
