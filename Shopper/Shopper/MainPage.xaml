@@ -2,12 +2,32 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Shopper"
-             x:Class="Shopper.MainPage">
+             x:Class="Shopper.MainPage"
+             BackgroundColor="#f5a67b">
 
-    <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
-        <BlazorWebView.RootComponents>
-            <RootComponent Selector="#app" ComponentType="{x:Type local:Components.Routes}" />
-        </BlazorWebView.RootComponents>
-    </BlazorWebView>
+    <Grid>
+
+        <!-- Blazor WebView (ukryty na starcie, żeby nie pokazywał "Loading...") -->
+        <BlazorWebView x:Name="blazorWebView"
+                       HostPage="wwwroot/index.html"
+                       BackgroundColor="Transparent"
+                       IsVisible="False"
+                       ZIndex="0">
+            <BlazorWebView.RootComponents>
+                <RootComponent Selector="#app"
+                               ComponentType="{x:Type local:Components.Routes}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
+
+        <!-- Splash widoczny przez 5 sekund -->
+        <Image x:Name="SplashView"
+               Source="splash.png"
+               Aspect="AspectFit"
+               BackgroundColor="#f5a67b"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               ZIndex="1" />
+
+    </Grid>
 
 </ContentPage>
