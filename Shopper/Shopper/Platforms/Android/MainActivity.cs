@@ -20,6 +20,10 @@ namespace Shopper
             base.OnCreate(savedInstanceState);
 
             Window.SetSoftInputMode(Android.Views.SoftInput.AdjustResize);
+
+#if DEBUG
+            Android.Webkit.WebView.SetWebContentsDebuggingEnabled(true);
+#endif
         }
     }
 }

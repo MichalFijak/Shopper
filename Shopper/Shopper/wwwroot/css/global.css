@@ -1,49 +1,43 @@
 ﻿/* Theme variables - single source of truth */
 :root {
     /* Background & text */
-    --bg-dark: #121417;
-    --bg-dark-rgb: 18,20,23;
-
+    --bg-dark: transparent; /* welcome_page jest globalnym tłem */
+    --bg-dark-rgb: 0,0,0;
     /* Panel colors (flat) */
-    --panel-color: #161823; /* dark panel */
-    --panel-selected-color: #1f6fa8; /* selected card color (blue) */
+    --panel-color: rgba(141 59 0 / 85%); /* ShopperCardColor z przezroczystością */
+    --panel-selected-color: #D97A2B; /* ShopperPrimaryColor */
 
-    --text: #c5c6c7;
-    --muted: #9aa0c2;
-
-    /* Accent / neon */
-    --neon: #66fcf1;
-    --neon-rgb: 102,252,241;
-    --teal: #45a29e;
-
+    --text: #2E1F14; /* ShopperTextColor */
+    --muted: #9a7f6a;
+    /* Accent / neon → żółty akcent */
+    --neon: #F2C94C;
+    --neon-rgb: 242,201,76;
+    --teal: #D97A2B;
     /* Primary / starlight */
-    --primary: #3498db;
-    --primary-dark: #1e3a8a;
-    --submit-start: #3a9bdc;
-    --submit-end: #1e3a8a;
-    --move-start: #b37aff;
-    --move-end: #5a2d91;
-    --remove-start: #ff4d6d;
-    --remove-end: #7a1c2f;
-
-    --accent: #78b4ff;
-    --accent-rgb: 120,180,255;
-    --starlight: #e0e6ff;
-
-    /* Buttons - smaller sizes (half of previous) */
-    --btn-padding-vertical: 6px; /* was 12px */
-    --btn-padding-horizontal: 9px; /* was 18px */
-    --btn-font-size: 0.45rem; /* reduced size */
-    --btn-font-size-md: 0.5rem; /* fallback for component buttons */
-
-    /* Buttons text color */
-    --btn-text: #0b0c10;
-
+    --primary: #D97A2B;
+    --primary-dark: #8C5A3C;
+    --submit-start: #D97A2B;
+    --submit-end: #8C5A3C;
+    /* MOVE TO CART */
+    --move-start: #D97A2B;
+    --move-end: #8C5A3C;
+    /* REMOVE ITEM */
+    --remove-start: #C0392B;
+    --remove-end: #7A1C2F;
+    --accent: #F2C94C;
+    --accent-rgb: 242,201,76;
+    --starlight: #F7E9D7;
+    /* Buttons */
+    --btn-padding-vertical: 6px;
+    --btn-padding-horizontal: 9px;
+    --btn-font-size: 0.45rem;
+    --btn-font-size-md: 0.5rem;
+    --btn-text: #2E1F14;
     /* Panels */
-    --panel-bg: #fffbe6;
+    --panel-bg: rgba(247,233,215,0.85);
 }
 
-/* Remove gradient helpers: use flat panels to avoid banding */
+/* Remove gradient helpers */
 .smooth-gradient {
     background-color: var(--panel-color);
     background-image: none;
@@ -56,9 +50,10 @@
     background-blend-mode: normal;
 }
 
-/* 🎨 Kolory */
+/* 🎨 Global background */
 body {
-    background: var(--bg-dark); /* prostsze tło od razu dla mobile */
+    background: url('welcome_page.png') no-repeat center center fixed;
+    background-size: cover;
     color: var(--text);
     font-family: 'Exo 2', sans-serif;
     margin: 0;
@@ -69,20 +64,27 @@ body {
 /* 🔠 Nagłówki */
 h1, h2, h3 {
     font-family: 'Orbitron', sans-serif;
-    color: var(--neon);
+    color: var(--accent);
     text-align: center;
-    text-shadow: 0 0 8px var(--teal);
+    text-shadow: 0 0 8px var(--panel-selected-color);
     margin: 15px 10px;
 }
 
-/* 📱 Rozmiary dopasowane do telefonu */
-h1 { font-size: 1.4rem; }
-h2 { font-size: 1.2rem; }
-h3 { font-size: 1rem; }
+h1 {
+    font-size: 1.4rem;
+}
 
-/* 🔘 Przyciski w stylu futurystycznym - globally smaller and no heavy shadows */
+h2 {
+    font-size: 1.2rem;
+}
+
+h3 {
+    font-size: 1rem;
+}
+
+/* 🔘 Przyciski */
 button {
-    background: var(--neon);
+    background: var(--primary);
     color: var(--btn-text);
     border: none;
     border-radius: 6px;
@@ -91,19 +93,35 @@ button {
     font-weight: bold;
     font-size: var(--btn-font-size);
     text-transform: uppercase;
-    box-shadow: none; /* removed heavy shadows */
+    box-shadow: none;
     transition: all 0.18s ease;
 }
 
-button:active { transform: scale(0.95); }
-button:hover {
-    background: var(--teal);
-    /* no large hover shadow */
-}
+    button:active {
+        transform: scale(0.95);
+    }
+
+    button:hover {
+        background: var(--teal);
+    }
 
 /* Utility classes */
-.hidden { display: none !important; }
-.center { display: flex; justify-content: center; align-items: center; }
+.hidden {
+    display: none !important;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 /* Global small components */
-.debug-panel { margin: 1rem; padding: .5rem; border: 1px dashed rgba(var(--accent-rgb), 0.15); background: var(--panel-bg); font-size: .9rem; color: var(--text); }
+.debug-panel {
+    margin: 1rem;
+    padding: .5rem;
+    border: 1px dashed rgba(var(--accent-rgb), 0.15);
+    background: var(--panel-bg);
+    font-size: .9rem;
+    color: var(--text);
+}

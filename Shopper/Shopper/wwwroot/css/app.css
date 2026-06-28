@@ -1,5 +1,8 @@
 ﻿html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: url('/welcome_page.png') no-repeat center center fixed;
+    background-size: cover;
+    color: var(--text);
 }
 
 a, .btn-link {
@@ -68,6 +71,7 @@ h1:focus {
 .status-bar-safe-area {
     display: none;
 }
+
 
 @supports (-webkit-touch-callout: none) {
     .status-bar-safe-area {
