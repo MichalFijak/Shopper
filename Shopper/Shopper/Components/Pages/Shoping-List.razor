@@ -11,7 +11,6 @@
 @implements IAsyncDisposable
 
 <div class="carousel-container">
-    <h2 class="section-title">Wybierz liste:</h2>
     <div id="carousel" class="carousel" @onpointerdown="HandleSwipeStart" @onpointerup="HandleSwipeEnd">
         @foreach (var category in categories)
         {
@@ -55,16 +54,6 @@
         border: 1px solid rgba(var(--accent-rgb),0.12);
     }
 
-    .section-title {
-        font-size: 1.4rem;
-        font-weight: 600;
-        color: var(--starlight);
-        text-align: center;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid rgba(var(--accent-rgb),0.08);
-        padding-bottom: 0.5rem;
-        letter-spacing: 1px;
-    }
 
     /* Carousel styling */
     .carousel {
@@ -72,7 +61,6 @@
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         gap: 1rem;
-        padding: 1rem;
     }
 
     .carousel-card {
@@ -86,6 +74,7 @@
         padding: 0.5rem;
         text-align: center;
         cursor: pointer;
+        height:2.5rem;
     }
 
         .carousel-card:hover {
