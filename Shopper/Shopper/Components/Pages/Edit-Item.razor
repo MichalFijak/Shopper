@@ -36,10 +36,7 @@
 
     private void SaveItem()
     {
-        if (string.IsNullOrWhiteSpace(newItem.Name) ||
-            string.IsNullOrWhiteSpace(newItem.Genre) ||
-            string.IsNullOrWhiteSpace(newItem.Amount))
-            return;
+        if (string.IsNullOrWhiteSpace(newItem.Name)) return; 
 
         itemsService.ModifyItemAsync(newItem);
         Navigation.NavigateTo("/edit-shopping-list");

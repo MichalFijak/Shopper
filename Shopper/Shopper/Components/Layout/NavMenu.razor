@@ -8,7 +8,6 @@
             </select>
         </div>
 
-        <!-- HAMBURGER -->
         <label for="hamburger" class="hamburger-label">
             <span></span>
             <span></span>
@@ -17,24 +16,21 @@
     </div>
 </div>
 
-<!-- CHECKBOX sterujący menu -->
 <input type="checkbox" id="hamburger" class="hamburger-checkbox" />
 
-<!-- OVERLAY zamykający menu po kliknięciu -->
 <div class="menu-overlay" onclick="document.getElementById('hamburger').checked = false"></div>
 
-<!-- PANEL MENU -->
 <div class="nav-scrollable">
     <nav class="flex-column">
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="shopping-list">
+            <NavLink class="nav-link" href="shopping-list" onclick="document.getElementById('hamburger').checked = false">
                 <span class="bi bi-list-nested-nav-menu"></span> Shopping list
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="edit-shopping-list">
+            <NavLink class="nav-link" href="edit-shopping-list" onclick="document.getElementById('hamburger').checked = false">
                 <span class="bi bi-list-nested-nav-menu"></span> Edit shopping list
             </NavLink>
         </div>
@@ -44,7 +40,6 @@
 
 <style>
 
-    /* HEADER przyklejony do góry */
     .navbar-wrapper {
         position: fixed;
         top: 0;
@@ -68,7 +63,6 @@
         align-items: center;
     }
 
-    /* HAMBURGER — stabilny, widoczny, klikalny */
     .hamburger-label {
         display: flex;
         flex-direction: column;
@@ -90,7 +84,6 @@
         display: none;
     }
 
-    /* OVERLAY — kliknięcie poza menu zamyka je */
     .menu-overlay {
         position: fixed;
         top: 56px;
@@ -106,7 +99,6 @@
         display: block;
     }
 
-    /* PANEL OPADA Z GÓRY */
     .nav-scrollable {
         position: fixed;
         top: 56px;
@@ -125,7 +117,6 @@
         opacity: 1;
     }
 
-    /* Items */
     .nav-scrollable nav {
         display: flex;
         flex-direction: column;
@@ -149,14 +140,12 @@
         transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     }
 
-        /* ⭐ SUBTLE ACTIVE ITEM */
         .nav-link.active {
-            background: rgba(var(--accent-rgb), 0.12); /* soft warm highlight */
+            background: rgba(var(--accent-rgb), 0.12); 
             color: var(--neon);
-            box-shadow: inset 0 0 4px rgba(var(--accent-rgb), 0.25); /* gentle inset glow */
+            box-shadow: inset 0 0 4px rgba(var(--accent-rgb), 0.25); 
         }
 
-        /* Hover */
         .nav-link:hover {
             background-color: rgba(var(--accent-rgb), 0.18);
             color: var(--neon);
