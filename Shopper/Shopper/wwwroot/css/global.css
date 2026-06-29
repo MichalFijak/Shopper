@@ -6,12 +6,12 @@
     /* Panel colors (flat) */
     --panel-color: rgba(141 59 0 / 85%); /* ShopperCardColor z przezroczystością */
     --panel-selected-color: #D97A2B; /* ShopperPrimaryColor */
-
+    --panel-rich-color: rgba(109, 44, 3, 0.98);
     --text: #2E1F14; /* ShopperTextColor */
     --muted: #9a7f6a;
     /* Accent / neon → żółty akcent */
-    --neon: #F2C94C;
-    --neon-rgb: 242,201,76;
+    --neon: #bf7e41;
+    --neon-rgb: 191, 126, 65;
     --teal: #D97A2B;
     /* Primary / starlight */
     --primary: #D97A2B;
