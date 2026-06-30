@@ -1,7 +1,7 @@
 ﻿@namespace Shopper.Components.Elements
 
 <div class="dropdown-container @(IsOpen ? "open" : "")">
-    <div class="dropdown-selected"
+    <div class="dropdown-selected @(SelectedValue != "" ? "selected" : "")"
          @onclick="ToggleDropdown"
          tabindex="0"
          role="button"
@@ -33,7 +33,6 @@
 </div>
 
 <style>
-    /* === Container === */
     .dropdown-container {
         position: relative;
         width: 100%;
@@ -43,7 +42,6 @@
         color: var(--text);
     }
 
-    /* === Selected box === */
     .dropdown-selected {
         background: var(--panel-color);
         border: 1px solid var(--muted);
@@ -54,22 +52,28 @@
         justify-content: space-between;
         align-items: center;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        color: var(--text);
     }
+
+        .dropdown-selected.selected {
+            color: var(--starlight);
+        }
 
         .dropdown-selected:hover,
         .dropdown-selected:focus {
             outline: none;
             border-color: var(--neon);
             box-shadow: 0 0 6px rgba(var(--neon-rgb), 0.6);
+
         }
 
     .dropdown-arrow {
         font-size: 0.8rem;
-        color: var(--text);
+        color: inherit;
+        opacity: 0.9;
         margin-left: 8px;
     }
 
-    /* === Options list === */
     .dropdown-options {
         position: absolute;
         top: calc(100% + 4px);
@@ -81,39 +85,34 @@
         list-style: none;
         margin: 0;
         padding: 0;
-        z-index: 2000; /* ensure above other elements */
+        z-index: 2000;
         box-shadow: 0 0 12px rgba(var(--neon-rgb), 0.15);
     }
 
-        /* === Option item === */
         .dropdown-options li {
-            display: block; /* ensure full-row hover area */
-            padding: 12px 14px; /* comfortable click/tap target */
+            display: block;
+            padding: 12px 14px;
             border-bottom: 1px solid var(--muted);
             cursor: pointer;
             transition: background 0.15s ease, color 0.15s ease;
             user-select: none;
+            color: var(--text);
         }
 
             .dropdown-options li:last-child {
                 border-bottom: none;
             }
 
-            /* Hover via CSS pseudo-class */
-            .dropdown-options li:hover {
-                background: rgba(var(--neon-rgb), 0.25);
-                color: var(--neon);
-            }
-
-            /* Programmatic hover (for reliable highlight on mobile + keyboard) */
+            .dropdown-options li:hover,
             .dropdown-options li.hover {
                 background: rgba(var(--neon-rgb), 0.25);
                 color: var(--neon);
             }
 
-            /* Selected item hint */
             .dropdown-options li.selected {
                 background: rgba(var(--neon-rgb), 0.12);
+                color: var(--starlight);
+                font-weight: 600;
             }
 </style>
 
@@ -132,7 +131,6 @@
     private void ToggleDropdown()
     {
         IsOpen = !IsOpen;
-        // Reset hover when opening to avoid stale highlight
         HoverIndex = -1;
     }
 

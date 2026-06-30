@@ -5,12 +5,19 @@
 @inject NavigationManager Navigation
 @inject IItemsService itemsService
 
-<ItemForm Title="Add New Item"
+<div class="items-padding">
+<ItemForm Title="Nowy produkt"
           Model="@newItem"
           CategoryOptions="@CategoryOptions"
           OnSave="SaveItem"
           OnCancel="Cancel" />
+</div>
 
+<style>
+    .items-padding{
+        padding-top:1rem;
+    }
+</style>
 @code {
     private ItemDto newItem = new() { Genre = "" };
 

@@ -24,7 +24,7 @@
     /* REMOVE ITEM */
     --remove-start: #C0392B;
     --remove-end: #7A1C2F;
-    --accent: #F2C94C;
+    --accent: #fae4a7;
     --accent-rgb: 242,201,76;
     --starlight: #F7E9D7;
     /* Buttons */
@@ -67,7 +67,6 @@ h1, h2, h3 {
     color: var(--accent);
     text-align: center;
     text-shadow: 0 0 8px var(--panel-selected-color);
-    margin: 15px 10px;
 }
 
 h1 {
