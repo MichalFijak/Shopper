@@ -1,40 +1,31 @@
 ﻿/* Theme variables - single source of truth */
 :root {
     /* Background & text */
-    --bg-dark: transparent; /* welcome_page jest globalnym tłem */
+    --bg-dark: transparent;
     --bg-dark-rgb: 0,0,0;
-    /* Panel colors (flat) */
-    --panel-color: rgba(141 59 0 / 85%); /* ShopperCardColor z przezroczystością */
-    --panel-selected-color: #D97A2B; /* ShopperPrimaryColor */
-    --panel-rich-color: rgba(109, 44, 3, 0.98);
-    --text: #2E1F14; /* ShopperTextColor */
-    --muted: #9a7f6a;
-    /* Accent / neon → żółty akcent */
-    --neon: #bf7e41;
-    --neon-rgb: 191, 126, 65;
-    --teal: #D97A2B;
-    /* Primary / starlight */
-    --primary: #D97A2B;
-    --primary-dark: #8C5A3C;
-    --submit-start: #D97A2B;
-    --submit-end: #8C5A3C;
-    /* MOVE TO CART */
-    --move-start: #D97A2B;
-    --move-end: #8C5A3C;
-    /* REMOVE ITEM */
-    --remove-start: #C0392B;
-    --remove-end: #7A1C2F;
-    --accent: #fae4a7;
-    --accent-rgb: 242,201,76;
-    --starlight: #F7E9D7;
+    /* Kolory wyciągnięte z PNG */
+    --panel-color: rgba(255, 245, 230, 0.85); /* pastelowy beż z tła */
+    --panel-rich-color: rgba(210, 170, 120, 0.95); /* ciemniejszy beż/brąz */
+    --panel-selected-color: #c97a2b; /* pomarańcz z koszyka i akcentów */
+
+    --light-text: var(--panel-color);
+    --text: #4a2e1a; /* brąz z szopa */
+    --muted: #8c6f55; /* jaśniejszy brąz */
+    --dark-bronze-text: var(--primary-dark);
+    /* Akcenty */
+    --accent: #f7e4b5; /* kremowy akcent z tła */
+    --accent-rgb: 247, 228, 181;
+    /* Primary */
+    --primary: #c97a2b; /* pomarańcz z koszyka */
+    --primary-dark: #8a5320;
     /* Buttons */
     --btn-padding-vertical: 6px;
     --btn-padding-horizontal: 9px;
     --btn-font-size: 0.45rem;
     --btn-font-size-md: 0.5rem;
-    --btn-text: #2E1F14;
+    --btn-text: #4a2e1a;
     /* Panels */
-    --panel-bg: rgba(247,233,215,0.85);
+    --panel-bg: rgba(255, 245, 230, 0.85);
 }
 
 /* Remove gradient helpers */
@@ -64,9 +55,10 @@ body {
 /* 🔠 Nagłówki */
 h1, h2, h3 {
     font-family: 'Orbitron', sans-serif;
-    color: var(--accent);
+    color: var(--text);
     text-align: center;
-    text-shadow: 0 0 8px var(--panel-selected-color);
+    text-shadow: 0 0 6px rgba(0,0,0,0.15);
+    margin: 15px 10px;
 }
 
 h1 {
@@ -86,13 +78,13 @@ button {
     background: var(--primary);
     color: var(--btn-text);
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);
     font-family: 'Exo 2', sans-serif;
     font-weight: bold;
     font-size: var(--btn-font-size);
     text-transform: uppercase;
-    box-shadow: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     transition: all 0.18s ease;
 }
 
@@ -101,7 +93,7 @@ button {
     }
 
     button:hover {
-        background: var(--teal);
+        background: var(--primary-dark);
     }
 
 /* Utility classes */
@@ -119,8 +111,17 @@ button {
 .debug-panel {
     margin: 1rem;
     padding: .5rem;
-    border: 1px dashed rgba(var(--accent-rgb), 0.15);
+    border: 1px dashed rgba(var(--accent-rgb), 0.25);
     background: var(--panel-bg);
     font-size: .9rem;
     color: var(--text);
 }
+
+.swipe-item {
+    transition: transform 0.25s ease-out;
+    will-change: transform;
+}
+    .swipe-item.dragging {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+

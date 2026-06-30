@@ -68,19 +68,19 @@
         justify-content: center;
         font-size: 2rem;
         cursor: pointer;
-        box-shadow: 0 0 22px rgba(var(--neon-rgb), 0.55);
+        box-shadow: 0 0 22px rgba(var(--accent-rgb), 0.55);
         transition: all 0.25s ease;
         z-index: 999;
     }
 
         .fab-add-item:hover {
-            box-shadow: 0 0 32px rgba(var(--neon-rgb), 0.65);
+            box-shadow: 0 0 32px rgba(var(--accent-rgb), 0.65);
             transform: translateY(-4px);
         }
 
         .fab-add-item:active {
             transform: scale(0.94);
-            box-shadow: 0 0 18px rgba(var(--neon-rgb), 0.45);
+            box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.45);
         }
 
 
@@ -99,13 +99,13 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        box-shadow: 0 0 12px rgba(var(--neon-rgb), 0.15);
+        box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.15);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
         .item-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 16px rgba(var(--neon-rgb), 0.25);
+            box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.25);
         }
 
     .item-content {
@@ -116,7 +116,7 @@
     .item-name {
         font-size: 1rem;
         font-weight: bold;
-        color: var(--starlight);
+        color: var(--muted);
         margin: 0 0 8px;
         text-shadow: 0 0 6px var(--teal);
     }
@@ -124,18 +124,18 @@
     .item-detail {
         margin: 3px 0;
         font-size: 0.8rem;
-        color: var(--neon);
+        color: var(--dark-bronze-text);
     }
 
         .item-detail span {
             font-weight: 600;
-            color: var(--starlight);
+            color: var(--muted);
         }
 
     /* REMOVE BUTTON */
     .remove-btn {
-        background: linear-gradient(135deg, var(--remove-start), var(--remove-end));
-        color: var(--btn-text);
+        background:var(--muted);
+        color: var(--light-text);
         border: none;
         border-radius: 6px;
         padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);

@@ -1,0 +1,161 @@
+@if (@MenuName == "hamburger")
+{
+    <label for="hamburger" class="hamburger-label">
+        <span></span>
+        <span></span>
+        <span></span>
+    </label>
+}
+else if (@MenuName == "list")
+{
+    <label for="list" class="list-label">
+        <span></span>
+        <span></span>
+        <span></span>
+    </label>
+}
+
+<input type="checkbox" id="@MenuName" class="hamburger-checkbox" />
+
+<div class="menu-overlay" onclick="document.getElementById('hamburger').checked = false"></div>
+
+<div class="nav-scrollable">
+    <nav class="flex-column">
+
+        @foreach (var Item in Items)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@Item.Value" onclick="document.getElementById('hamburger').checked = false">
+                    <span class="bi bi-list-nested-nav-menu"></span> @Item.Label
+                </NavLink>
+            </div>
+        };
+
+
+    </nav>
+</div>
+
+<style>
+ .hamburger-label {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        padding: 6px 10px;
+        cursor: pointer;
+        z-index: 3100;
+    }
+
+        .hamburger-label span {
+            width: 28px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+    .hamburger-checkbox {
+        display: none;
+    }
+
+    .menu-overlay {
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+        z-index: 1500;
+        display: none;
+    }
+
+    #hamburger:checked ~ .menu-overlay {
+        display: block;
+    }
+
+    .nav-scrollable {
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        background: var(--panel-rich-color);
+        border-bottom: 1px solid rgba(var(--accent-rgb), 0.05);
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+        z-index: 2000;
+    }
+
+    #hamburger:checked ~ .nav-scrollable {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .nav-scrollable nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .nav-item {
+        margin: 0.25rem 0;
+        border-bottom: 0.5px solid var(--accent);
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: var(--muted);
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .nav-link.active {
+            background: rgba(var(--accent-rgb), 0.12); 
+            color: var(--accent);
+            box-shadow: inset 0 0 4px rgba(var(--accent-rgb), 0.25); 
+        }
+
+        .nav-link:hover {
+            background-color: rgba(var(--accent-rgb), 0.18);
+            color: var(--accent);
+            box-shadow: inset 0 0 6px rgba(var(--accent-rgb), 0.28);
+        }
+
+        .nav-link .bi {
+            color: var(--muted);
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover .bi,
+        .nav-link.active .bi {
+            color: var(--accent);
+        }
+
+</style>
+
+
+@code {
+
+    [Parameter] public List<(string Value, string Label)> Items { get; set; } = new();
+    [Parameter] public string MenuName { get; set; } = string.Empty;
+
+    private bool IsOpen { get; set; }
+    private int HoverIndex { get; set; } = -1;
+
+
+    private void ToggleDropdown()
+    {
+        IsOpen = !IsOpen;
+        HoverIndex = -1;
+    }
+
+    private async Task SelectOption((string Value, string Label) option)
+    {
+        IsOpen = false;
+        HoverIndex = -1;
+    }
+}
