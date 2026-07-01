@@ -1,3 +1,4 @@
+@using System.Diagnostics
 @using Shopper.Services.Components.Dtos
 @inject IJSRuntime JS
 
@@ -179,7 +180,17 @@
 
         var translate = Math.Min(deltaX, 80);
 
-        JS.InvokeVoidAsync("applySwipeTransform", $"item-{item.Name}", translate);
+        Debug.WriteLine($"Swipe Move: {translate}");
+        if (translate > 0)
+        {
+
+            JS.InvokeVoidAsync("applySwipeTransform", $"item-{item.Name}", translate);
+        }
+        else
+        {
+            JS.InvokeVoidAsync("applySwipeTransformRed", $"item-{item.Name}", translate);
+
+        }
     }
 
     private async void HandleSwipeEnd(TouchEventArgs e, ItemDto item)
