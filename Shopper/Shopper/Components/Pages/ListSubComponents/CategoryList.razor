@@ -1,11 +1,17 @@
 @using Shopper.Services.Components.Dtos
+@inject IJSRuntime JS
 
 <ul class="space-list">
     @if (Items != null && Items.Any())
     {
         @foreach (var item in Items)
         {
-            <li class="space-list-item @(item.InCart ? "in-cart" : "")">
+            <li id="item-@item.Name"
+                class="space-list-item @(item.InCart ? "in-cart" : "")"
+                @ontouchstart="HandleSwipeStart"
+                @ontouchmove="(e) => HandleSwipeMove(e, item)"
+                @ontouchend="(e) => HandleSwipeEnd(e, item)">
+
                 <div class="item-info">
                     <span class="item-name">@item.Name</span>
 
@@ -37,16 +43,6 @@
                             Move from cart
                         </button>
                     }
-                    else
-                    {
-                        <button class="space-btn submit" @onclick="() => SubmitItem.InvokeAsync(item)">
-                            Move to cart
-                        </button>
-                    }
-
-                    <button class="space-btn remove" @onclick="() => RemoveItem.InvokeAsync(item)">
-                        Remove item
-                    </button>
                 </div>
             </li>
         }
@@ -56,7 +52,6 @@
         <li class="empty-message">No items available</li>
     }
 </ul>
-
 
 <style>
     .space-list {
@@ -80,15 +75,15 @@
         transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
-    .space-list-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0 16px rgba(var(--neon-rgb),0.25);
-    }
+        .space-list-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 16px rgba(var(--neon-rgb),0.25);
+        }
 
-    .space-list-item.in-cart {
-        border-color: rgba(255,180,80,0.6);
-        background-color: var(--panel-rich-color);
-    }
+        .space-list-item.in-cart {
+            border-color: rgba(255,180,80,0.6);
+            background-color: var(--panel-rich-color);
+        }
 
     .item-info {
         display: flex;
@@ -112,19 +107,14 @@
         color: var(--muted);
     }
 
-    .item-price {
-        font-weight: 600;
-        color: var(--muted);
-    }
-
+    .item-price,
     .item-amount {
         font-weight: 600;
-        color: var(--muted);
     }
 
     .item-actions {
         display: flex;
-        flex-direction: column; /* mobile-friendly */
+        flex-direction: column;
         gap: 0.5rem;
         margin-left: 1rem;
     }
@@ -134,34 +124,26 @@
         font-weight: 600;
         color: var(--light-text);
         border: none;
-        box-shadow: none;
         padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);
         font-size: var(--btn-font-size-md);
         text-transform: uppercase;
         transition: background 0.2s ease, transform 0.2s ease;
     }
 
-    .space-btn:hover {
-        transform: scale(1.05);
-    }
+        .space-btn:hover {
+            transform: scale(1.05);
+        }
 
-    .space-btn.submit {
+        .space-btn.move {
             background: var(--panel-selected-color);
-    }
+        }
 
-    .space-btn.move {
-            background: var(--panel-selected-color);
-    }
 
-    .space-btn.remove {
-            background: var(--muted);
-    }
-
-    .space-btn:disabled {
-        background: rgba(80,80,120,0.4);
-        color: #aaa;
-        cursor: not-allowed;
-    }
+        .space-btn:disabled {
+            background: rgba(80,80,120,0.4);
+            color: #aaa;
+            cursor: not-allowed;
+        }
 
     .empty-message {
         text-align: center;
@@ -177,4 +159,49 @@
     [Parameter] public EventCallback<ItemDto> SubmitItem { get; set; }
     [Parameter] public EventCallback<ItemDto> MoveItemFromCart { get; set; }
     [Parameter] public EventCallback<ItemDto> RemoveItem { get; set; }
+
+    private double startX;
+    private double currentX;
+    private bool isSwiping = false;
+
+    private void HandleSwipeStart(TouchEventArgs e)
+    {
+        startX = e.Touches[0].ClientX;
+        isSwiping = true;
+    }
+
+    private void HandleSwipeMove(TouchEventArgs e, ItemDto item)
+    {
+        if (!isSwiping) return;
+
+        currentX = e.Touches[0].ClientX;
+        var deltaX = currentX - startX;
+
+        var translate = Math.Min(deltaX, 80);
+
+        JS.InvokeVoidAsync("applySwipeTransform", $"item-{item.Name}", translate);
+    }
+
+    private async void HandleSwipeEnd(TouchEventArgs e, ItemDto item)
+    {
+        isSwiping = false;
+
+        var endX = e.ChangedTouches[0].ClientX;
+        var deltaX = endX - startX;
+
+        if (deltaX > 50)
+        {
+            await JS.InvokeVoidAsync("applySwipeTransform", $"item-{item.Name}");
+            await SubmitItem.InvokeAsync(item);
+        }
+        else if (deltaX < -50)
+        {
+            await JS.InvokeVoidAsync("applySwipeRemove", $"item-{item.Name}");
+            await RemoveItem.InvokeAsync(item);
+        }
+        else
+        {
+            JS.InvokeVoidAsync("resetSwipeTransform", $"item-{item.Name}");
+        }
+    }
 }

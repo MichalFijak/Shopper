@@ -4,6 +4,7 @@
 @using Shopper.Services.Components.Dtos
 @inject NavigationManager Navigation
 @inject IItemsService itemsService
+@inject IJSRuntime JS
 
 <div class="edit-navbar">
     <h1>Edycja listy</h1>
@@ -12,10 +13,15 @@
 <ul class="item-list">
     @foreach (var entity in items)
     {
-        @foreach (var item in entity.Items)
+        foreach (var item in entity.Items)
         {
-            <li class="item-card">
-                <div class="item-content" @onclick="() => NavigateToModifyItem(item)">
+            <li id="item-@item.Name" class="item-card">
+                <div class="item-content"
+                     @ontouchstart="HandleSwipeStart"
+                     @ontouchmove="(e) => HandleSwipeMove(e, item)"
+                     @ontouchend="(e) => HandleSwipeEnd(e, item)"
+                     @onclick="() => NavigateToModifyItem(item)">
+
                     <h3 class="item-name">@item.Name</h3>
 
                     @RenderDetail("Rodzaj", GetPolishCategory(item.Genre))
@@ -23,10 +29,6 @@
                     @RenderDetail("Ilość", item.Amount)
                     @RenderDetail("Opis", item.Description)
                 </div>
-
-                <button class="remove-btn" @onclick="() => RemoveItem(item)">
-                    Usuń
-                </button>
             </li>
         }
     }
@@ -34,15 +36,15 @@
 
 <!-- FLOATING BUTTON -->
 <button class="fab-add-item" @onclick="NavigateToAddItem">
-    <span class="bi bi-plus-lg"><span class="add-item-icon">+</span></span>
+    <span class="add-item-icon">+</span>
 </button>
 
 <style>
-    .add-item-icon
-    {
+    .add-item-icon {
         font-weight: bold;
         color: var(--accent);
     }
+
     /* NAVBAR */
     .edit-navbar {
         display: flex;
@@ -82,7 +84,6 @@
             transform: scale(0.94);
             box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.45);
         }
-
 
     /* ITEM LIST */
     .item-list {
@@ -131,24 +132,6 @@
             font-weight: 600;
             color: var(--muted);
         }
-
-    /* REMOVE BUTTON */
-    .remove-btn {
-        background:var(--muted);
-        color: var(--light-text);
-        border: none;
-        border-radius: 6px;
-        padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);
-        font-size: var(--btn-font-size-md);
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: background 0.2s ease;
-    }
-
-        .remove-btn:hover {
-            background: var(--remove-start);
-        }
-
 </style>
 
 @functions {
@@ -159,6 +142,10 @@
 }
 
 @code {
+    private double startX;
+    private double currentX;
+    private bool isSwiping = false;
+
     private List<ItemGroupDto> items = new();
 
     private string GetPolishCategory(string genre)
@@ -198,6 +185,44 @@
     private async Task RemoveItem(ItemDto item)
     {
         await itemsService.RemoveItemAsync(item);
+    }
+
+    /* SWIPE HANDLERS */
+
+    private void HandleSwipeStart(TouchEventArgs e)
+    {
+        startX = e.Touches[0].ClientX;
+        isSwiping = true;
+    }
+
+    private void HandleSwipeMove(TouchEventArgs e, ItemDto item)
+    {
+        if (!isSwiping) return;
+
+        currentX = e.Touches[0].ClientX;
+        var deltaX = currentX - startX;
+
+        var translate = Math.Min(deltaX, 80);
+
+        JS.InvokeVoidAsync("applySwipeTransform", $"item-{item.Name}", translate);
+    }
+
+    private async void HandleSwipeEnd(TouchEventArgs e, ItemDto item)
+    {
+        isSwiping = false;
+
+        var endX = e.ChangedTouches[0].ClientX;
+        var deltaX = endX - startX;
+
+        if (deltaX < -50)
+        {
+            await JS.InvokeVoidAsync("applySwipeRemove", $"item-{item.Name}");
+            await RemoveItem(item);
+        }
+        else
+        {
+            JS.InvokeVoidAsync("resetSwipeTransform", $"item-{item.Name}");
+        }
     }
 
     public void Dispose()
