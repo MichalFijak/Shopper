@@ -215,15 +215,12 @@
         {
             await JS.InvokeVoidAsync("applySwipeTransform", $"item-{item.Name}");
             await SubmitItem.InvokeAsync(item);
-            JS.InvokeVoidAsync("resetSwipeTransform", $"item-{item.Name}");
 
         }
         else if (deltaX < -50)
         {
             await JS.InvokeVoidAsync("applySwipeRemove", $"item-{item.Name}");
             await RemoveItem.InvokeAsync(item);
-            JS.InvokeVoidAsync("resetSwipeTransform", $"item-{item.Name}");
-
 
         }
             JS.InvokeVoidAsync("resetSwipeTransform", $"item-{item.Name}");

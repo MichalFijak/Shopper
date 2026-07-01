@@ -106,7 +106,6 @@
     }
 
         .item-card:hover {
-            transform: translateY(-2px);
             box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.25);
         }
 
@@ -198,16 +197,23 @@
 
     private void HandleSwipeMove(TouchEventArgs e, ItemDto item)
     {
-        if (!isSwiping) return;
+
+        if (!isSwiping)
+        {
+            JS.InvokeVoidAsync("resetSwipeTransform", $"item-{item.Name}");
+            return;
+        }
 
         currentX = e.Touches[0].ClientX;
         var deltaX = currentX - startX;
 
-        var translate = Math.Min(deltaX, 80);
+        if (deltaX > 0)
+            return; 
 
-        JS.InvokeVoidAsync("applySwipeTransform", $"item-{item.Name}", translate);
+        var translate = Math.Max(deltaX, -80); 
+
+        JS.InvokeVoidAsync("applySwipeTransformRed", $"item-{item.Name}", translate);
     }
-
     private async void HandleSwipeEnd(TouchEventArgs e, ItemDto item)
     {
         isSwiping = false;
@@ -215,15 +221,17 @@
         var endX = e.ChangedTouches[0].ClientX;
         var deltaX = endX - startX;
 
+        if (deltaX > 0)
+            return; // blokada swipe w prawo
+
         if (deltaX < -50)
         {
             await JS.InvokeVoidAsync("applySwipeRemove", $"item-{item.Name}");
             await RemoveItem(item);
+            return;
         }
-        else
-        {
-            JS.InvokeVoidAsync("resetSwipeTransform", $"item-{item.Name}");
-        }
+
+        JS.InvokeVoidAsync("resetSwipeTransform", $"item-{item.Name}");
     }
 
     public void Dispose()
