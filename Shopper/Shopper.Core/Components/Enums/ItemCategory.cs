@@ -9,6 +9,8 @@
         Fruit,
         Vegetables,
         Beverages,
+        Chemicals,
+        Cosmetics,
         Unknown,
         Cart
     }

@@ -5,11 +5,18 @@
 @inject IItemsService itemsService
 @inject NavigationManager Navigation
 
+<div class="items-padding">
 <ItemForm Title="@itemToModify.Name"
           Model="@newItem"
           CategoryOptions="@CategoryOptions"
           OnSave="SaveItem"
           OnCancel="Cancel" />
+</div>
+<style>
+    .items-padding{
+        padding-top:1rem;
+    }
+</style>
 
 @code {
     private ItemDto newItem = new();
@@ -36,10 +43,7 @@
 
     private void SaveItem()
     {
-        if (string.IsNullOrWhiteSpace(newItem.Name) ||
-            string.IsNullOrWhiteSpace(newItem.Genre) ||
-            string.IsNullOrWhiteSpace(newItem.Amount))
-            return;
+        if (string.IsNullOrWhiteSpace(newItem.Name)) return; 
 
         itemsService.ModifyItemAsync(newItem);
         Navigation.NavigateTo("/edit-shopping-list");

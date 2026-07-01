@@ -5,10 +5,8 @@
 @inject NavigationManager Navigation
 @inject IItemsService itemsService
 
-<h1>Edit Shopping List</h1>
-
-<div>
-    <button class="btn btn-primary" @onclick="NavigateToAddItem">Add new item</button>
+<div class="edit-navbar">
+    <h1>Edycja listy</h1>
 </div>
 
 <ul class="item-list">
@@ -19,91 +17,146 @@
             <li class="item-card">
                 <div class="item-content" @onclick="() => NavigateToModifyItem(item)">
                     <h3 class="item-name">@item.Name</h3>
-                    <p class="item-detail">Rodzaj: <span>@GetPolishCategory(item.Genre)</span></p>
-                    <p class="item-detail">Cena: <span>@item.Price</span></p>
-                    <p class="item-detail">Ilość: <span>@item.Amount</span></p>
-                    <p class="item-description">Opis: @item.Description</p>
+
+                    @RenderDetail("Rodzaj", GetPolishCategory(item.Genre))
+                    @RenderDetail("Cena", item.Price)
+                    @RenderDetail("Ilość", item.Amount)
+                    @RenderDetail("Opis", item.Description)
                 </div>
-                <button class="remove-btn" @onclick="() => RemoveItem(item)">Usuń</button>
+
+                <button class="remove-btn" @onclick="() => RemoveItem(item)">
+                    Usuń
+                </button>
             </li>
         }
     }
 </ul>
 
+<!-- FLOATING BUTTON -->
+<button class="fab-add-item" @onclick="NavigateToAddItem">
+    <span class="bi bi-plus-lg"><span class="add-item-icon">+</span></span>
+</button>
+
 <style>
+    .add-item-icon
+    {
+        font-weight: bold;
+        color: var(--accent);
+    }
+    /* NAVBAR */
+    .edit-navbar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 1rem 0;
+        padding: 0 4px;
+    }
 
-.item-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+    /* FLOATING ACTION BUTTON */
+    .fab-add-item {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        background: linear-gradient(135deg, var(--panel-selected-color), var(--primary-dark));
+        color: var(--btn-text);
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        cursor: pointer;
+        box-shadow: 0 0 22px rgba(var(--accent-rgb), 0.55);
+        transition: all 0.25s ease;
+        z-index: 999;
+    }
 
-.item-card {
-    background: var(--panel-color);
-    border-radius: 10px;
-    margin: 12px 0;
-    padding: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    box-shadow: 0 0 12px rgba(var(--neon-rgb), 0.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+        .fab-add-item:hover {
+            box-shadow: 0 0 32px rgba(var(--accent-rgb), 0.65);
+            transform: translateY(-4px);
+        }
 
-.item-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 16px rgba(var(--neon-rgb), 0.25);
-}
+        .fab-add-item:active {
+            transform: scale(0.94);
+            box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.45);
+        }
 
-.item-content {
-    flex: 1;
-    cursor: pointer;
-}
 
-.item-name {
-    font-size: 1rem;
-    font-weight: bold;
-    color: var(--neon);
-    margin: 0 0 8px;
-    text-shadow: 0 0 6px var(--teal);
-}
+    /* ITEM LIST */
+    .item-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
-.item-detail {
-    margin: 3px 0;
-    font-size: 0.8rem;
-    color: var(--muted);
-}
+    .item-card {
+        background: var(--panel-color);
+        border-radius: 10px;
+        margin: 12px 0;
+        padding: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.15);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-.item-detail span {
-    font-weight: 600;
-    color: var(--text);
-}
+        .item-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.25);
+        }
 
-.item-description {
-    margin-top: 6px;
-    font-size: 0.75rem;
-    color: var(--text);
-    opacity: 0.85;
-}
+    .item-content {
+        flex: 1;
+        cursor: pointer;
+    }
 
-.remove-btn {
-    background: linear-gradient(135deg, var(--remove-start), var(--remove-end));
-    color: var(--btn-text);
-    border: none;
-    border-radius: 6px;
-    padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);
-    font-size: var(--btn-font-size-md);
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
+    .item-name {
+        font-size: 1rem;
+        font-weight: bold;
+        color: var(--muted);
+        margin: 0 0 8px;
+        text-shadow: 0 0 6px var(--teal);
+    }
 
-.remove-btn:hover {
-    background: var(--remove-start);
-}
+    .item-detail {
+        margin: 3px 0;
+        font-size: 0.8rem;
+        color: var(--dark-bronze-text);
+    }
+
+        .item-detail span {
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+    /* REMOVE BUTTON */
+    .remove-btn {
+        background:var(--muted);
+        color: var(--light-text);
+        border: none;
+        border-radius: 6px;
+        padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);
+        font-size: var(--btn-font-size-md);
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+        .remove-btn:hover {
+            background: var(--remove-start);
+        }
 
 </style>
 
+@functions {
+    RenderFragment? RenderDetail(string label, object value) =>
+        string.IsNullOrWhiteSpace(value?.ToString())
+            ? null
+            : @<p class="item-detail">@label: <span>@value</span></p>;
+}
 
 @code {
     private List<ItemGroupDto> items = new();
@@ -116,10 +169,8 @@
             return polish;
         }
 
-        return genre; 
+        return genre;
     }
-
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -130,7 +181,6 @@
     private void HandleItemsChanged()
     {
         items = itemsService.GetCachedItems();
-
         InvokeAsync(StateHasChanged);
     }
 

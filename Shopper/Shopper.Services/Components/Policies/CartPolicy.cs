@@ -1,6 +1,5 @@
 ﻿using Shopper.Core.Components.Dtos;
 using Shopper.Services.Components.Dtos;
-using System.Diagnostics;
 
 namespace Shopper.Services.Components.Policies
 {
@@ -10,7 +9,6 @@ namespace Shopper.Services.Components.Policies
         {
             var inCart = items.Where(i => i.InCart).ToList();
             var notInCart = items.Where(i => !i.InCart).ToList();
-            Debug.WriteLine($"Partitioned: {notInCart.Count} not in cart, {inCart.Count} in cart");
             return new List<ItemGroupDto>
             {
                 new ItemGroupDto { InCart = false, Items = notInCart },
