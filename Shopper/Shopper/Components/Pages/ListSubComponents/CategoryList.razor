@@ -6,43 +6,45 @@
     {
         @foreach (var item in Items)
         {
-            <li id="item-@item.Name"
-                class="space-list-item @(item.InCart ? "in-cart" : "")"
-                @ontouchstart="HandleSwipeStart"
-                @ontouchmove="(e) => HandleSwipeMove(e, item)"
-                @ontouchend="(e) => HandleSwipeEnd(e, item)">
+            <li class="space-list-item-wrapper">
+                <div id="item-@item.Name"
+                     class="item-inner @(item.InCart ? "in-cart" : "")"
+                     @ontouchstart="HandleSwipeStart"
+                     @ontouchmove="(e) => HandleSwipeMove(e, item)"
+                     @ontouchend="(e) => HandleSwipeEnd(e, item)">
 
-                <div class="item-info">
-                    <span class="item-name">@item.Name</span>
+                    <div class="item-info">
+                        <span class="item-name">@item.Name</span>
 
-                    @if (!string.IsNullOrWhiteSpace(item.Genre))
-                    {
-                        <span class="item-genre">(@item.Genre)</span>
-                    }
+                        @if (!string.IsNullOrWhiteSpace(item.Genre))
+                        {
+                            <span class="item-genre">(@item.Genre)</span>
+                        }
 
-                    @if (!string.IsNullOrWhiteSpace(item.Description))
-                    {
-                        <span class="item-description">(@item.Description)</span>
-                    }
+                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                        {
+                            <span class="item-description">(@item.Description)</span>
+                        }
 
-                    @if (!string.IsNullOrWhiteSpace(item.Price))
-                    {
-                        <span class="item-price">$ @item.Price</span>
-                    }
+                        @if (!string.IsNullOrWhiteSpace(item.Price))
+                        {
+                            <span class="item-price">$ @item.Price</span>
+                        }
 
-                    @if (!string.IsNullOrWhiteSpace(item.Amount))
-                    {
-                        <span class="item-amount">x @item.Amount</span>
-                    }
-                </div>
+                        @if (!string.IsNullOrWhiteSpace(item.Amount))
+                        {
+                            <span class="item-amount">x @item.Amount</span>
+                        }
+                    </div>
 
-                <div class="item-actions">
-                    @if (item.InCart)
-                    {
-                        <button class="space-btn move" @onclick="() => MoveItemFromCart.InvokeAsync(item)">
-                            Move from cart
-                        </button>
-                    }
+                    <div class="item-actions">
+                        @if (item.InCart)
+                        {
+                            <button class="space-btn move" @onclick="() => MoveItemFromCart.InvokeAsync(item)">
+                                Move from cart
+                            </button>
+                        }
+                    </div>
                 </div>
             </li>
         }
@@ -61,9 +63,18 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        width: 100%;
+        overflow-x: hidden;
     }
 
-    .space-list-item {
+    .space-list-item-wrapper {
+        width: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    .item-inner {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
@@ -73,14 +84,20 @@
         background-color: var(--panel-color);
         box-shadow: 0 0 12px rgba(var(--neon-rgb),1);
         transition: transform 0.18s ease, box-shadow 0.18s ease;
+        width: 100%;
+        box-sizing: border-box;
     }
 
-        .space-list-item:hover {
+        .item-inner.swiping {
+            transition: none !important;
+        }
+
+        .item-inner:hover {
             transform: translateY(-3px);
             box-shadow: 0 0 16px rgba(var(--neon-rgb),0.25);
         }
 
-        .space-list-item.in-cart {
+        .item-inner.in-cart {
             border-color: rgba(255,180,80,0.6);
             background-color: var(--panel-rich-color);
         }
@@ -138,7 +155,6 @@
             background: var(--panel-selected-color);
         }
 
-
         .space-btn:disabled {
             background: rgba(80,80,120,0.4);
             color: #aaa;
@@ -176,18 +192,15 @@
 
         currentX = e.Touches[0].ClientX;
         var deltaX = currentX - startX;
-
         var translate = Math.Min(deltaX, 80);
 
         if (translate > 0)
         {
-
             JS.InvokeVoidAsync("applySwipeTransform", $"item-{item.Name}", translate);
         }
         else
         {
             JS.InvokeVoidAsync("applySwipeTransformRed", $"item-{item.Name}", translate);
-
         }
     }
 
