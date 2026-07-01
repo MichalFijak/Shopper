@@ -1,4 +1,3 @@
-@using System.Diagnostics
 @using Shopper.Services.Components.Dtos
 @inject IJSRuntime JS
 
@@ -180,7 +179,6 @@
 
         var translate = Math.Min(deltaX, 80);
 
-        Debug.WriteLine($"Swipe Move: {translate}");
         if (translate > 0)
         {
 
